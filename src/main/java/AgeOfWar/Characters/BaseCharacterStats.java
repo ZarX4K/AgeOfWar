@@ -1,0 +1,152 @@
+package AgeOfWar.Characters;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class BaseCharacterStats {
+    public int x;
+    public int y;
+    protected int width;
+    protected int height;
+    protected int health;
+    protected int damage;
+    private long lastAttackTime;
+    public int priceBuy;
+    private int moveSpeed;
+    private boolean isMoving;
+    public boolean isEnemy;
+
+    protected Image standImage;
+    protected Image walkImage;
+    protected Image attackImage;
+
+    private static final Color HEALTH_BAR_BACKGROUND_COLOR = Color.RED;
+    private static final Color HEALTH_BAR_FOREGROUND_COLOR = Color.GREEN;
+    private static final int HEALTH_BAR_HEIGHT = 35; // Height of the health bar
+    private static final int HEALTH_BAR_WIDTH = 4;  // Width of the health bar
+
+    public BaseCharacterStats(int x, int y, int width, int height, String standImagePath, String walkImagePath, String attackImagePath, int health, int damage, int priceBuy, int moveSpeed, boolean isMoving, boolean isEnemy) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.standImage = new ImageIcon(getClass().getResource("/" + standImagePath)).getImage();
+        this.walkImage = new ImageIcon(getClass().getResource("/" + walkImagePath)).getImage();
+        this.attackImage = new ImageIcon(getClass().getResource("/" + attackImagePath)).getImage();
+        this.health = health;
+        this.damage = damage;
+        this.priceBuy = priceBuy;
+        this.moveSpeed = moveSpeed;
+        this.isMoving = isMoving;
+        this.isEnemy = isEnemy;
+    }
+
+    public void draw(Graphics g) {
+        // Draw the character image
+        g.drawImage(walkImage, x, y, width, height, null);
+
+        // Draw vertical health bar above the character
+        drawHealthBar(g);
+    }
+
+    private void drawHealthBar(Graphics g) {
+        // Calculate the health bar's current health height
+        int barCurrentHeight = (int) (((double) health / getMaxHealth()) * HEALTH_BAR_HEIGHT);
+        int barX = x + (width / 2) - (HEALTH_BAR_WIDTH / 2); // Center the health bar horizontally above the character
+        int barY = y - HEALTH_BAR_HEIGHT - 5; // Position the bar directly above the character's head
+
+        // Draw a red background bar
+        g.setColor(HEALTH_BAR_BACKGROUND_COLOR);
+        g.fillRect(barX, barY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+
+        // Draw a green foreground bar (representing current health)
+        g.setColor(HEALTH_BAR_FOREGROUND_COLOR);
+        g.fillRect(barX, barY + (HEALTH_BAR_HEIGHT - barCurrentHeight), HEALTH_BAR_WIDTH, barCurrentHeight);
+    }
+
+    public void takeDamage(int damage) {
+        this.health -= damage;
+    }
+
+    public boolean isAlive() {
+        return this.health > 0;
+    }
+
+    public int getDamage() {
+        return this.damage;
+    }
+
+    public int getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public boolean isEnemy() {
+        return isEnemy;
+    }
+
+    public long getLastAttackTime() {
+        return lastAttackTime;
+    }
+
+    public void setLastAttackTime(long lastAttackTime) {
+        this.lastAttackTime = lastAttackTime;
+    }
+
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public Image getStandImage() {
+        return standImage;
+    }
+
+    public Image getWalkImage() {
+        return walkImage;
+    }
+
+    public Image getAttackImage() {
+        return attackImage;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    // Assuming there's a notion of maximum health for each character
+    public int getMaxHealth() {
+        return 100;  // Replace with actual max health logic if different per character
+    }
+}
