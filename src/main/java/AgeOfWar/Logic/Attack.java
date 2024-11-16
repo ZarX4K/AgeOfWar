@@ -26,7 +26,7 @@ public class Attack {
             if (!healthBoostApplied && knight.getHealth() <= 100 && enemyKnight.getHealth() <= 100) {
                 if (RANDOM.nextBoolean()) {
                     knight.setHealth(knight.getHealth() + 25);
-                    System.out.println("Player knight narrowly avoids deafeath!");
+                    System.out.println("Player knight narrowly avoids deafeat!");
                 } else {
                     enemyKnight.setHealth(enemyKnight.getHealth() + 25);
                     System.out.println("Enemy knight narrowly avoids death!");

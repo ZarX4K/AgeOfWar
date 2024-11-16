@@ -61,7 +61,7 @@ public class MainLogic implements Runnable {
                 if (!gameStarted) {
                     gameStarted = true;
                     gameState = 2;
-                    System.out.println("Game state changed to In-Game!");
+                    System.out.println("Game state changed to In--Game!");
                     music.stopMusic();
                     music.loadMusic("souboj1.wav");
                     music.playMusic();
