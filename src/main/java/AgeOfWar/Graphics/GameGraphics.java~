@@ -83,7 +83,7 @@ public class GameGraphics extends JFrame {
                 g.setColor(Color.YELLOW);
                 g.setFont(new Font("Courier", Font.BOLD, 23));
                 g.drawString("Coins: " + mainLogic.getPlayerGold(), 20, 220);
-                g.drawString( "Coins: " + mainLogic.getPlayerGold(), 1550, 220);
+                g.drawString( mainLogic.getEnemyPlayerGold()+":snioC" , 1550, 220);
 
                 // Calculate and display spawn readiness bars
                 long currentTime = System.currentTimeMillis();

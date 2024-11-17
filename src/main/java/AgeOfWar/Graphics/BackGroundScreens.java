@@ -19,7 +19,7 @@ public class BackGroundScreens extends JPanel {
 
     private void loadBackgroundScreenImage() {
         try {
-            backgroundImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/GameBackground2.png"));
+            backgroundImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/GameBackgroundF.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }

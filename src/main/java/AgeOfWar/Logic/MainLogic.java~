@@ -141,37 +141,6 @@ public class MainLogic implements Runnable {
             System.out.println("Wait for the enemy spawn delay to finish!");
         }
     }
-    private void spawnEnemyArcher() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEnemyKnightSpawnTime >= SPAWN_DELAY) {
-            Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, 10, 5);
-            if (enemyPlayerGold >= enemyArcher.priceBuy) {
-                enemyKnights.add(enemyArcher);  // Add enemy archers to enemy's army
-                System.out.println("Enemy Archer spawned");
-                enemyPlayerGold -= enemyArcher.priceBuy;
-                moving.moveKnight(enemyArcher, enemyKnights);
-                lastEnemyKnightSpawnTime = currentTime; // Update last spawn time
-            } else {
-                System.out.println("Not enough gold to spawn the enemy archer!");
-            }
-        }
-    }
-
-    private void spawnEnemyTank() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEnemyKnightSpawnTime >= SPAWN_DELAY) {
-            Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, 15, 10,20);
-            if (enemyPlayerGold >= enemyTank.priceBuy) {
-                enemyKnights.add(enemyTank);  // Add enemy tanks to enemy's army
-                System.out.println("Enemy Tank spawned");
-                enemyPlayerGold -= enemyTank.priceBuy;
-                moving.moveKnight(enemyTank, enemyKnights);
-                lastEnemyKnightSpawnTime = currentTime; // Update last spawn time
-            } else {
-                System.out.println("Not enough gold to spawn the enemy tank!");
-            }
-        }
-    }
     void awardGoldForKill(Knight knight) {
         if (knight.isEnemy()) {
             playerGold += knight.priceBuy;
