@@ -68,14 +68,6 @@ public class BaseCharacterStats {
     public void takeDamage(int damage) {
         this.health -= damage;
     }
-    public boolean isInCombat() {
-        return isInCombat;
-    }
-
-    // Setter for isInCombat
-    public void setIsInCombat(boolean isInCombat) {
-        this.isInCombat = isInCombat;
-    }
 
     public boolean isAlive() {
         return this.health > 0;

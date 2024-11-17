@@ -49,8 +49,6 @@ public class Collisions {
             mainLogic.awardGoldForKill(defeated);
             System.out.println(defeated.getClass().getSimpleName() + " has been removed.");
         }
-        defeatedCharacters.clear();  // Make sure the list is cleared after use
-
 
         // After checking for collisions, resume moving for characters who are no longer fighting
         for (BaseCharacterStats character : allCharacters) {

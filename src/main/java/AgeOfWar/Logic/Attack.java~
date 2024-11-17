@@ -34,14 +34,12 @@ public class Attack {
 
             attacker.setLastAttackTime(currentTime);
 
-            // If the defender dies, reset combat state
+            // Reset attack state after defeating an enemy
             if (!defender.isAlive()) {
-                attacker.setIsInCombat(false); // Reset the combat state for the attacker
-                System.out.println(attacker.getClass().getSimpleName() + " is no longer in combat.");
+                attacker.setIsInCombat(false);  // If you have a combat state flag for attackers
             }
         }
     }
-
 
 
     public void handleHealthBoost(BaseCharacterStats character1, BaseCharacterStats character2) {

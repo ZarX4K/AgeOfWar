@@ -1,22 +1,13 @@
 package AgeOfWar.Logic;
 
-import AgeOfWar.Characters.Knight;
+import AgeOfWar.Characters.BaseCharacterStats;
+
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Hitboxes {
-    public List<Rectangle> getAllKnightHitboxes(List<Knight> knights) {
-        List<Rectangle> hitboxes = new ArrayList<>();
-        for (Knight knight : knights) {
-            hitboxes.add(new Rectangle(knight.getX(), knight.getY(), knight.getWidth(), knight.getHeight()));
-        }
-        return hitboxes;
-    }
-
-    public boolean knightsCollide(Knight knight, Knight enemyKnight) {
-        Rectangle hitbox1 = new Rectangle(knight.getX(), knight.getY(), knight.getWidth(), knight.getHeight());
-        Rectangle hitbox2 = new Rectangle(enemyKnight.getX(), enemyKnight.getY(), enemyKnight.getWidth(), enemyKnight.getHeight());
+    public boolean collides(BaseCharacterStats character1, BaseCharacterStats character2) {
+        Rectangle hitbox1 = new Rectangle(character1.getX(), character1.getY(), character1.getWidth(), character1.getHeight());
+        Rectangle hitbox2 = new Rectangle(character2.getX(), character2.getY(), character2.getWidth(), character2.getHeight());
         return hitbox1.intersects(hitbox2);
     }
 }

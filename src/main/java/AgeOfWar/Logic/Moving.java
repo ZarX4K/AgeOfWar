@@ -1,47 +1,70 @@
-// File: AgeOfWar.Logic.Moving.java
 package AgeOfWar.Logic;
 
-import AgeOfWar.Characters.Knight;
+import AgeOfWar.Characters.BaseCharacterStats;
+
+import java.awt.Rectangle;
 import java.util.List;
 
 public class Moving {
-    private static final int MIN_DISTANCE_BETWEEN_KNIGHTS = 150; // Adjust based on knight size and desired gap
+    private static final int MIN_DISTANCE_BETWEEN_KNIGHTS = 150; // To avoid friendly blocking
+    private Hitboxes hitboxes;  // We'll use this for collision detection
 
-    public void moveKnight(Knight knight, List<Knight> allKnights) {
-        if (knight == null || !knight.isMoving()) return;
-
-        // Check if there's another knight in front within the minimum distance
-        if (isKnightInFront(knight, allKnights)) {
-            return; // Stop moving if there's an ally or enemy knight directly in front
-        }
-
-        int moveSpeed = knight.getMoveSpeed();
-        if (knight.isEnemy()) {
-            knight.setX(knight.getX() - moveSpeed);
-        } else {
-            knight.setX(knight.getX() + moveSpeed);
-        }
+    public Moving(Hitboxes hitboxes) {
+        this.hitboxes = hitboxes;
     }
 
-    private boolean isKnightInFront(Knight knight, List<Knight> allKnights) {
-        for (Knight otherKnight : allKnights) {
-            if (otherKnight != knight && otherKnight.isAlive()) {
-                boolean isSameTeam = knight.isEnemy() == otherKnight.isEnemy();
+    // Method to check if a character is engaged in combat by checking collisions
+    public boolean isColliding(BaseCharacterStats character, List<BaseCharacterStats> allCharacters) {
+        for (BaseCharacterStats otherCharacter : allCharacters) {
+            if (otherCharacter != character && otherCharacter.isAlive() && otherCharacter.isEnemy() != character.isEnemy()) {
+                // Check for collision between the character and enemy
+                if (hitboxes.collides(character, otherCharacter)) {
+                    return true;  // They are colliding, meaning combat starts
+                }
+            }
+        }
+        return false;  // No collision, no combat
+    }
 
-                // Check if another knight (enemy or ally) is in front
-                if (isSameTeam && ((knight.isEnemy() && otherKnight.getX() < knight.getX()) ||
-                        (!knight.isEnemy() && otherKnight.getX() > knight.getX()))) {
+    // Move character only if not colliding with an enemy
+    public void moveCharacter(BaseCharacterStats character, List<BaseCharacterStats> allCharacters) {
+        if (character == null || !character.isMoving()) return;
 
-                    if (Math.abs(otherKnight.getX() - knight.getX()) < MIN_DISTANCE_BETWEEN_KNIGHTS) {
-                        return true; // Another knight is in front within the minimum distance
+        // Check if the character is colliding with an enemy
+        if (isColliding(character, allCharacters)) {
+            return; // Stop movement if a collision occurs (engagement in combat)
+        }
+
+        // Check if the character's path is blocked by a friendly character
+        if (isCharacterInFront(character, allCharacters)) {
+            return; // Character cannot move if blocked by a friendly character
+        }
+
+        int moveSpeed = character.getMoveSpeed();
+        // Move left or right based on whether the character is an enemy or not
+        character.setX(character.isEnemy() ? character.getX() - moveSpeed : character.getX() + moveSpeed);
+    }
+
+    private boolean isCharacterInFront(BaseCharacterStats character, List<BaseCharacterStats> allCharacters) {
+        for (BaseCharacterStats otherCharacter : allCharacters) {
+            if (otherCharacter != character && otherCharacter.isAlive()) {
+                boolean isSameTeam = character.isEnemy() == otherCharacter.isEnemy();
+                if (isSameTeam &&
+                        Math.abs(otherCharacter.getX() - character.getX()) < MIN_DISTANCE_BETWEEN_KNIGHTS) { // Prevent friendly blocking
+                    if (character.isEnemy()) {
+                        // Enemy characters are moving left, check if they're blocked on the left
+                        if (otherCharacter.getX() < character.getX()) {
+                            return true;
+                        }
+                    } else {
+                        // Non-enemy characters are moving right, check if they're blocked on the right
+                        if (otherCharacter.getX() > character.getX()) {
+                            return true;
+                        }
                     }
                 }
             }
         }
         return false;
-    }
-
-    public void stopKnight(Knight knight) {
-        knight.setMoving(false);
     }
 }

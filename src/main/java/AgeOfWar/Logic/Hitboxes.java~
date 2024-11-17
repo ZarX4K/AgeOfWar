@@ -1,0 +1,48 @@
+package AgeOfWar.Logic;
+
+import AgeOfWar.Characters.Archer;
+import AgeOfWar.Characters.BaseCharacterStats;
+import AgeOfWar.Characters.Knight;
+import AgeOfWar.Characters.Tank;
+
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Hitboxes {
+    public List<Rectangle> getAllKnightHitboxes(List<Knight> knights) {
+        List<Rectangle> hitboxes = new ArrayList<>();
+        for (Knight knight : knights) {
+            hitboxes.add(new Rectangle(knight.getX(), knight.getY(), knight.getWidth(), knight.getHeight()));
+        }
+        return hitboxes;
+    }
+
+    public boolean knightsCollide(Knight knight, Knight enemyKnight) {
+        Rectangle hitbox1 = new Rectangle(knight.getX(), knight.getY(), knight.getWidth(), knight.getHeight());
+        Rectangle hitbox2 = new Rectangle(enemyKnight.getX(), enemyKnight.getY(), enemyKnight.getWidth(), enemyKnight.getHeight());
+        return hitbox1.intersects(hitbox2);
+    }
+    public boolean archerCollides(Archer archer, BaseCharacterStats enemy) {
+        if (enemy instanceof Archer) {
+            Archer enemyArcher = (Archer) enemy;
+            Rectangle archerHitbox = new Rectangle(archer.getX(), archer.getY(), archer.getWidth(), archer.getHeight());
+            Rectangle enemyHitbox = new Rectangle(enemyArcher.getX(), enemyArcher.getY(), enemyArcher.getWidth(), enemyArcher.getHeight());
+            return archerHitbox.intersects(enemyHitbox);
+        }
+        return false;  // Or handle other cases if needed
+    }
+
+    public boolean tankCollides(Tank tank, BaseCharacterStats enemy) {
+        if (enemy instanceof Tank) {
+            Tank enemyTank = (Tank) enemy;
+            Rectangle tankHitbox = new Rectangle(tank.getX(), tank.getY(), tank.getWidth(), tank.getHeight());
+            Rectangle enemyHitbox = new Rectangle(enemyTank.getX(), enemyTank.getY(), enemyTank.getWidth(), enemyTank.getHeight());
+            return tankHitbox.intersects(enemyHitbox);
+        }
+        return false;  // Or handle other cases if needed
+    }
+
+
+
+}
