@@ -80,7 +80,7 @@ public class MainLogic implements Runnable {
             playerGold -= knight.priceBuy; // Deducting priceBuy from playerGold
             moving.moveKnight(knight, knights); // Pass the list of knights for collision handling
         } else {
-            System.out.println("Not enough gold to spawn the knight!");
+            System.out.println("Not enough gold to spawn the knightd!");
         }
     }
 
