@@ -135,7 +135,7 @@ public class MainLogic implements Runnable {
                 moving.moveKnight(enemyKnight, enemyKnights);
                 lastEnemyKnightSpawnTime = currentTime; // Update last enemy spawn time
             } else {
-                System.out.println("Not enough gold to spawn the enemy knight!");
+                System.out.println("Not enough gold to spawn the enemy knight!!");
             }
         } else {
             System.out.println("Wait for the enemy spawn delay to finish!");
