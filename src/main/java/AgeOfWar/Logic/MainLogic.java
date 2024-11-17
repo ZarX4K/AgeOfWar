@@ -262,7 +262,7 @@ public class MainLogic implements Runnable {
         // Update and check movement for Knights, Archers, and Tanks
         for (BaseCharacterStats character : characters) {
             if (character.isAlive() && character.isMoving()) {
-                moving.moveCharacter(character, characters);  // Pass all characters for movement and collision checks
+                moving.moveCharacter(character, characters);  // dPass all characters for movement and collision checks
             } else if (!character.isAlive()) {
                 deadCharacters.add(character);
             }

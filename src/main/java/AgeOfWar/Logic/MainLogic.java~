@@ -272,11 +272,7 @@ public class MainLogic implements Runnable {
         collisions.checkCollisions(allCharacters);
 
         // Award gold and remove dead characters
-        // Inside the dead character loop:
         for (BaseCharacterStats deadCharacter : deadCharacters) {
-            // Award gold first
-            awardGoldForKill(deadCharacter);
-            // Then remove them from the active lists
             if (deadCharacter instanceof Knight) {
                 knights.remove(deadCharacter);
             } else if (deadCharacter instanceof Archer) {
@@ -284,6 +280,8 @@ public class MainLogic implements Runnable {
             } else if (deadCharacter instanceof Tank) {
                 tanks.remove(deadCharacter);
             }
+
+            awardGoldForKill(deadCharacter);
         }
 
         gamePanel.repaint();
