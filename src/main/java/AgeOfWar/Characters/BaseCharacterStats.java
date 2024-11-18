@@ -19,13 +19,15 @@ public class BaseCharacterStats {
     protected Image standImage;
     protected Image walkImage;
     protected Image attackImage;
+    private boolean defeated; // Add a defeated flag
+
 
     private static final Color HEALTH_BAR_BACKGROUND_COLOR = Color.RED;
     private static final Color HEALTH_BAR_FOREGROUND_COLOR = Color.GREEN;
     private static final int HEALTH_BAR_HEIGHT = 35; // Height of the health bar
     private static final int HEALTH_BAR_WIDTH = 4;  // Width of the health bar
 
-    public BaseCharacterStats(int x, int y, int width, int height, String standImagePath, String walkImagePath, String attackImagePath, int health, int damage, int priceBuy, int moveSpeed, boolean isMoving, boolean isEnemy, boolean isInCombat) {
+    public BaseCharacterStats(int x, int y, int width, int height, String standImagePath, String walkImagePath, String attackImagePath, int health, int damage, int priceBuy, int moveSpeed, boolean isMoving, boolean isEnemy, boolean isInCombat, boolean defeated) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -40,6 +42,7 @@ public class BaseCharacterStats {
         this.isMoving = isMoving;
         this.isEnemy = isEnemy;
         this.isInCombat = isInCombat;
+        this.defeated = defeated;
     }
 
     public void draw(Graphics g) {
@@ -49,7 +52,13 @@ public class BaseCharacterStats {
         // Draw vertical health bar above the character
         drawHealthBar(g);
     }
+    public boolean isDefeated() {
+        return defeated;
+    }
 
+    public void setDefeated(boolean defeated) {
+        this.defeated = defeated;
+    }
     private void drawHealthBar(Graphics g) {
         // Calculate the health bar's current health height
         int barCurrentHeight = (int) (((double) health / getMaxHealth()) * HEALTH_BAR_HEIGHT);
@@ -70,6 +79,9 @@ public class BaseCharacterStats {
     }
     public boolean isInCombat() {
         return isInCombat;
+    }
+    public int getGoldReward() {
+        return this.priceBuy; // Define this in the character stats
     }
 
     // Setter for isInCombat

@@ -1,61 +1,39 @@
 package AgeOfWar.Logic;
 
-import AgeOfWar.Characters.Archer;
-import AgeOfWar.Characters.BaseCharacterStats;
-import AgeOfWar.Characters.Knight;
-import AgeOfWar.Characters.Tank;
-import AgeOfWar.Graphics.BackGroundScreens;
-import AgeOfWar.Graphics.GameGraphics;
-import AgeOfWar.Graphics.Music;
-
+import AgeOfWar.Characters.*;
+import AgeOfWar.Graphics.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainLogic implements Runnable {
-    private Music music;
-    private GameGraphics gameGraphics;
-    private List<Knight> knights;
-    private List<Knight> enemyKnights;
-    private List<BaseCharacterStats> characters = new ArrayList<>();
-    private List<Archer> archers = new ArrayList<>();
-    private List<Tank> tanks = new ArrayList<>();
-    private List<Archer> enemyArchers = new ArrayList<>();
-    private List<Tank> enemyTanks = new ArrayList<>();
-    private Moving moving;
-    // Process the movement of all characters
 
-    private Tank tank;
-    private Archer archer;
-    private Collisions collisions;
-    private Hitboxes hitboxes;
-    private Attack attack;
-    private BackGroundScreens backGroundScreens;
+    // Constants
+    private static final long KNIGHT_SPAWN_DELAY = 1500;
+    private static final long ARCHER_SPAWN_DELAY = 2000;
+    private static final long TANK_SPAWN_DELAY = 4000;
+    private static final int FPS = 60;
+    private static final double DRAW_INTERVAL = 1000000000.0 / FPS;
+
+    // Game state variables
     private int gameState = 1;
     private boolean gameStarted = false;
-    private Thread gameThread;
-    private long currentTime;
-    private double delta = 0;
-    private int fps = 60;
-    private long lastTime = System.nanoTime();
-    private double drawInterval = 1000000000 / fps;
-    private JPanel gamePanel;
-    private KeyReader keyReader;
     private int playerGold = 500;
-    private int enemyGold= 500;
+    private int enemyGold = 500;
+
+    // Time tracking
     private long lastKnightSpawnTime = 0;
-    private long lastEnemyKnightSpawnTime = 0;
-    private static final long KNIGHT_SPAWN_DELAY = 1500; // 1.5 seconds for knights
-    private static final long ARCHER_SPAWN_DELAY = 2000; // 2 seconds for archers
-    private static final long TANK_SPAWN_DELAY = 4000; // 4 seconds for tanks
     private long lastArcherSpawnTime = 0;
     private long lastTankSpawnTime = 0;
-    private List<BaseCharacterStats> deadCharacters = new ArrayList<>();
+    private long lastEnemyKnightSpawnTime = 0;
     private long lastEnemyArcherSpawnTime = 0;
     private long lastEnemyTankSpawnTime = 0;
+    private long currentTime;
+    private double delta = 0;
+    private long lastTime = System.nanoTime();
     public static long getSpawnDelay(String characterType) {
-        switch (characterType) {
+        switch (characterType.toLowerCase()) {
             case "knight":
                 return KNIGHT_SPAWN_DELAY;
             case "archer":
@@ -67,257 +45,204 @@ public class MainLogic implements Runnable {
         }
     }
 
-    public void setGamePanel(JPanel gamePanel) {
-        this.gamePanel = gamePanel;
-    }
 
+    // Game components
+    private Music music;
+    private GameGraphics gameGraphics;
+    private Moving moving;
+    private Collisions collisions;
+    private Hitboxes hitboxes;
+    private Attack attack;
+    private BackGroundScreens backGroundScreens;
+    private JPanel gamePanel;
+    private Thread gameThread;
+
+    // Key input
+    private KeyReader keyReader;
+
+    // Characters
+    private final List<Knight> knights = new ArrayList<>();
+    private final List<Archer> archers = new ArrayList<>();
+    private final List<Tank> tanks = new ArrayList<>();
+    private final List<Knight> enemyKnights = new ArrayList<>();
+    private final List<Archer> enemyArchers = new ArrayList<>();
+    private final List<Tank> enemyTanks = new ArrayList<>();
+    private final List<BaseCharacterStats> deadCharacters = new ArrayList<>();
+
+    // Initialization
     public void initialize() {
-        hitboxes = new Hitboxes();  // Create the Hitboxes object first
-        moving = new Moving(hitboxes);  // Pass it to Moving
         music = new Music();
+        moving = new Moving();
+        hitboxes = new Hitboxes();
+        attack = new Attack(moving);
+        collisions = new Collisions(moving, hitboxes, attack, this);
+
+        keyReader = new KeyReader();
+
         music.loadMusic("intro1.wav");
         music.playMusic();
-        knights = new ArrayList<>();
-        enemyKnights = new ArrayList<>();
-        attack = new Attack(moving);
-        collisions = new Collisions(moving, hitboxes, attack, this); // Pass "this" reference to MainLogic
-        keyReader = new KeyReader();
+
+        setupGamePanel();
+    }
+
+    private void setupGamePanel() {
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(keyReader);
         gamePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!gameStarted) {
-                    gameStarted = true;
-                    gameState = 2;
-                    System.out.println("Game state changed to In--Game!");
-                    music.stopMusic();
-                    music.loadMusic("souboj1.wav");
-                    music.playMusic();
+                    startGame();
                 }
             }
         });
     }
 
+    private void startGame() {
+        gameStarted = true;
+        gameState = 2;
+        System.out.println("Game state changed to In-Game!");
+        music.stopMusic();
+        music.loadMusic("souboj1.wav");
+        music.playMusic();
+    }
 
+    public void setGamePanel(JPanel gamePanel) {
+        this.gamePanel = gamePanel;
+    }
 
+    // Spawning methods
     private void spawnKnight() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastKnightSpawnTime >= KNIGHT_SPAWN_DELAY) {
-            Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, 10);
-            if (playerGold >= knight.priceBuy) {
-                knights.add(knight);
-                System.out.println("Knight spawned");
-                deductPlayerGold(knight.priceBuy);  // Deduct the cost of the knight from the player's gold
-                moving.moveCharacter(knight, new ArrayList<BaseCharacterStats>(knights));  // Move the knight after spawning
-                lastKnightSpawnTime = currentTime; // Update last spawn time for the player knight
-            } else {
-                System.out.println("Not enough gold to spawn the knight!");
-            }
-        }
+        spawnCharacter(knights, new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, false, 10), playerGold, lastKnightSpawnTime, KNIGHT_SPAWN_DELAY, false);
     }
 
     private void spawnArcher() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastArcherSpawnTime >= ARCHER_SPAWN_DELAY) {
-            Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, 5,10);
-            if (playerGold >= archer.priceBuy) {
-                archers.add(archer);
-                System.out.println("Archer spawned");
-                deductPlayerGold(archer.priceBuy);  // Deduct the cost of the archer from the player's gold
-                moving.moveCharacter(archer, new ArrayList<BaseCharacterStats>(archers));  // Move the archer after spawning
-                lastArcherSpawnTime = currentTime; // Update spawn time
-            } else {
-                System.out.println("Not enough gold to spawn the archer!");
-            }
-        }
+        spawnCharacter(archers, new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 5, 10), playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, false);
     }
 
     private void spawnTank() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastTankSpawnTime >= TANK_SPAWN_DELAY) {
-            Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, 15, 10, 20);
-            if (playerGold >= tank.priceBuy) {
-                tanks.add(tank);
-                System.out.println("Tank spawned");
-                deductPlayerGold(tank.priceBuy);  // Deduct the cost of the tank from the player's gold
-                moving.moveCharacter(tank, new ArrayList<BaseCharacterStats>(tanks));  // Move the tank after spawning
-                lastTankSpawnTime = currentTime; // Update spawn time
-            } else {
-                System.out.println("Not enough gold to spawn the tank!");
-            }
-        }
+        spawnCharacter(tanks, new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, false, false, 10, 20, 20), playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, false);
     }
 
     private void spawnEnemyKnight() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEnemyKnightSpawnTime >= KNIGHT_SPAWN_DELAY) {
-            Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false,10);
-            if (enemyGold >= enemyKnight.priceBuy) {
-                enemyKnights.add(enemyKnight);
-                System.out.println("Enemy Knight spawned");
-                deductEnemyGold(enemyKnight.priceBuy);  // Deduct the cost of the enemy knight from the enemy's gold
-                moving.moveCharacter(enemyKnight, new ArrayList<BaseCharacterStats>(enemyKnights));  // Move the enemy knight after spawning
-                lastEnemyKnightSpawnTime = currentTime;
-            } else {
-                System.out.println("Not enough gold to spawn the enemy knight!");
-            }
-        }
+        spawnCharacter(enemyKnights, new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false, false, 10), enemyGold, lastEnemyKnightSpawnTime, KNIGHT_SPAWN_DELAY, true);
     }
 
     private void spawnEnemyArcher() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEnemyArcherSpawnTime >= ARCHER_SPAWN_DELAY) {
-            Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, 5,10);
-            if (enemyGold >= enemyArcher.priceBuy) {
-                enemyArchers.add(enemyArcher);
-                System.out.println("Enemy Archer spawned");
-                deductEnemyGold(enemyArcher.priceBuy);  // Deduct the cost of the enemy archer from the enemy's gold
-                moving.moveCharacter(enemyArcher, new ArrayList<BaseCharacterStats>(enemyArchers));  // Move the enemy archer after spawning
-                lastEnemyArcherSpawnTime = currentTime;
-            } else {
-                System.out.println("Not enough gold to spawn the enemy archer!");
-            }
-        }
+        spawnCharacter(enemyArchers, new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 5, 10), enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, true);
     }
 
     private void spawnEnemyTank() {
+        spawnCharacter(enemyTanks, new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20), enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, true);
+    }
+
+    private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold, long lastSpawnTime, long spawnDelay, boolean isEnemy) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEnemyTankSpawnTime >= TANK_SPAWN_DELAY) {
-            Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, 15, 10, 20);
-            if (enemyGold >= enemyTank.priceBuy) {
-                enemyTanks.add(enemyTank);
-                System.out.println("Enemy Tank spawned");
-                deductEnemyGold(enemyTank.priceBuy);  // Deduct the cost of the enemy tank from the enemy's gold
-                moving.moveCharacter(enemyTank, new ArrayList<BaseCharacterStats>(enemyTanks));  // Move the enemy tank after spawning
-                lastEnemyTankSpawnTime = currentTime;
-            } else {
-                System.out.println("Not enough gold to spawn the enemy tank!");
-            }
+        if (currentTime - lastSpawnTime >= spawnDelay && gold >= character.priceBuy) {
+            characterList.add(character);
+            System.out.println(character.getClass().getSimpleName() + " spawned");
+            if (isEnemy) deductEnemyGold(character.priceBuy);
+            else deductPlayerGold(character.priceBuy);
+
+            moving.moveCharacter(character, new ArrayList<>(characterList));
+        }
+    }
+
+    // Update logic
+    public void update() {
+        handleSpawning();
+        handleCollisions();
+
+        removeDefeatedCharacters(knights);
+        removeDefeatedCharacters(archers);
+        removeDefeatedCharacters(tanks);
+        removeDefeatedCharacters(enemyKnights);
+        removeDefeatedCharacters(enemyArchers);
+        removeDefeatedCharacters(enemyTanks);
+        knights.forEach(knight -> moving.moveCharacter(knight, knights));
+        archers.forEach(archer -> moving.moveCharacter(archer, archers));
+        tanks.forEach(tank -> moving.moveCharacter(tank, tanks));
+        enemyKnights.forEach(knight -> moving.moveCharacter(knight, enemyKnights));
+        enemyArchers.forEach(archer -> moving.moveCharacter(archer, enemyArchers));
+        enemyTanks.forEach(tank -> moving.moveCharacter(tank, enemyTanks));
+        gamePanel.repaint();
+
+    }
+
+    private void handleSpawning() {
+        if (keyReader.knightSpawn) {
+            spawnKnight();
+            keyReader.knightSpawn = false; // Reset the flag after spawning
+        }
+        if (keyReader.archerSpawn) {
+            spawnArcher();
+            keyReader.archerSpawn = false; // Reset the flag after spawning
+        }
+        if (keyReader.tankSpawn) {
+            spawnTank();
+            keyReader.tankSpawn = false; // Reset the flag after spawning
+        }
+        if (keyReader.ENEMYknightSpawn) {
+            spawnEnemyKnight();
+            keyReader.ENEMYknightSpawn = false; // Reset the flag after spawning
+        }
+        if (keyReader.ENEMYarcherSpawn) {
+            spawnEnemyArcher();
+            keyReader.ENEMYarcherSpawn = false; // Reset the flag after spawning
+        }
+        if (keyReader.ENEMYtankSpawn) {
+            spawnEnemyTank();
+            keyReader.ENEMYtankSpawn = false; // Reset the flag after spawning
         }
     }
 
 
+    private void handleCollisions() {
+        List<BaseCharacterStats> playerCharacters = new ArrayList<>();
+        playerCharacters.addAll(knights);
+        playerCharacters.addAll(archers);
+        playerCharacters.addAll(tanks);
 
+        List<BaseCharacterStats> enemyCharacters = new ArrayList<>();
+        enemyCharacters.addAll(enemyKnights);
+        enemyCharacters.addAll(enemyArchers);
+        enemyCharacters.addAll(enemyTanks);
+
+        collisions.checkCollisions(playerCharacters, enemyCharacters);
+    }
+
+    private void removeDefeatedCharacters(List<? extends BaseCharacterStats> charactersList) {
+        charactersList.removeIf(character -> {
+            if (character.getHealth() <= 0 && !character.isDefeated()) {
+                character.setDefeated(true);
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+    // Utility methods
 
     public void awardGoldForKill(BaseCharacterStats character) {
         if (character.isEnemy()) {
-            playerGold += character.getPriceBuy();
-            System.out.println("Player A awarded " + character.getPriceBuy() + " gold for killing an enemy " + character.getClass().getSimpleName() + "!");
+            playerGold += character.getGoldReward();
+            System.out.println("Player awarded " + character.getGoldReward() + " gold for killing an enemy.");
         } else {
-            enemyGold += character.getPriceBuy();
-            System.out.println("Enemy Player awarded " + character.getPriceBuy() + " gold for killing a " + character.getClass().getSimpleName() + "!");
+            enemyGold += character.getGoldReward();
+            System.out.println("Enemy awarded " + character.getGoldReward() + " gold for killing a player unit.");
         }
     }
 
-
-
-
-    public void update() {
-        long currentTime = System.currentTimeMillis();
-
-        if (keyReader.knightSpawn && (currentTime - lastKnightSpawnTime >= KNIGHT_SPAWN_DELAY)) {
-            spawnKnight();
-            keyReader.knightSpawn = false;
-        }
-        if (keyReader.archerSpawn && (currentTime - lastArcherSpawnTime >= ARCHER_SPAWN_DELAY)) {
-            spawnArcher();
-            keyReader.archerSpawn = false;
-        }
-        if (keyReader.tankSpawn && (currentTime - lastTankSpawnTime >= TANK_SPAWN_DELAY)) {
-            spawnTank();
-            keyReader.tankSpawn = false;
-        }
-
-        // Handle enemy spawns
-        if (keyReader.ENEMYknightSpawn && (currentTime - lastEnemyKnightSpawnTime >= KNIGHT_SPAWN_DELAY)) {
-            spawnEnemyKnight();
-            keyReader.ENEMYknightSpawn = false;
-        }
-        if (keyReader.ENEMYarcherSpawn && (currentTime - lastEnemyArcherSpawnTime >= ARCHER_SPAWN_DELAY)) {
-            spawnEnemyArcher();
-            keyReader.ENEMYarcherSpawn = false;
-        }
-        if (keyReader.ENEMYtankSpawn && (currentTime - lastEnemyTankSpawnTime >= TANK_SPAWN_DELAY)) {
-            spawnEnemyTank();
-            keyReader.ENEMYtankSpawn = false;
-        }
-
-        List<BaseCharacterStats> allCharacters = new ArrayList<>();
-        allCharacters.addAll(knights);
-        allCharacters.addAll(archers);
-        allCharacters.addAll(tanks);
-        allCharacters.addAll(enemyKnights);
-        allCharacters.addAll(enemyArchers);
-        allCharacters.addAll(enemyTanks);
-
-        for (BaseCharacterStats character : allCharacters) {
-            if (character.isAlive() && character.isMoving()) {
-                moving.moveCharacter(character, allCharacters);  // Pass all characters for movement and collision checks
-            } else if (!character.isAlive()) {
-                deadCharacters.add(character);
-            }
-        }
-
-        // Update and check movement for Knights, Archers, and Tanks
-        for (BaseCharacterStats character : characters) {
-            if (character.isAlive() && character.isMoving()) {
-                moving.moveCharacter(character, characters);  // dPass all characters for movement and collision checks
-            } else if (!character.isAlive()) {
-                deadCharacters.add(character);
-            }
-        }
-
-        // Handle collisions
-        collisions.checkCollisions(allCharacters);
-
-        // Award gold and remove dead characters
-        for (BaseCharacterStats deadCharacter : deadCharacters) {
-            if (deadCharacter instanceof Knight) {
-                knights.remove(deadCharacter);
-            } else if (deadCharacter instanceof Archer) {
-                archers.remove(deadCharacter);
-            } else if (deadCharacter instanceof Tank) {
-                tanks.remove(deadCharacter);
-            }
-
-            awardGoldForKill(deadCharacter);
-        }
-
-        gamePanel.repaint();
+    public void deductPlayerGold(int amount) {
+        playerGold -= amount;
     }
 
-    public int getEnemyGold() {
-        return enemyGold;
+    public void deductEnemyGold(int amount) {
+        enemyGold -= amount;
     }
 
-
-    public class KeyReader implements KeyListener {
-        public boolean knightSpawn, archerSpawn, tankSpawn, skyAttackSpawn;
-        public boolean ENEMYknightSpawn, ENEMYarcherSpawn, ENEMYtankSpawn, ENEMYskyAttackSpawn;
-
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_A) knightSpawn = true;
-            if (e.getKeyCode() == KeyEvent.VK_S) archerSpawn = true;  // New key for spawning archer
-            if (e.getKeyCode() == KeyEvent.VK_D) tankSpawn = true;     // New key for spawning tank
-            if (e.getKeyCode() == KeyEvent.VK_L) ENEMYknightSpawn = true;
-            if (e.getKeyCode() == KeyEvent.VK_K) ENEMYarcherSpawn = true; // Key for enemy archer spawn
-            if (e.getKeyCode() == KeyEvent.VK_J) ENEMYtankSpawn = true; // New key for enemy tank
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
-        }
-    }
-
-
+    // Game loop
     public void startGameThread() {
         if (gameThread == null) {
             gameThread = new Thread(this);
@@ -329,7 +254,7 @@ public class MainLogic implements Runnable {
     public void run() {
         while (gameThread != null) {
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
+            delta += (currentTime - lastTime) / DRAW_INTERVAL;
             lastTime = currentTime;
             if (delta >= 1) {
                 update();
@@ -338,47 +263,61 @@ public class MainLogic implements Runnable {
         }
     }
 
-    public void resetGame() {
-        gameState = 1;
-        gameStarted = false;
-        gamePanel.repaint();
+    // Key handling
+    public class KeyReader implements KeyListener {
+        public boolean knightSpawn, archerSpawn, tankSpawn;
+        public boolean ENEMYknightSpawn, ENEMYarcherSpawn, ENEMYtankSpawn;
+
+        @Override
+        public void keyTyped(KeyEvent e) {}
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_A) knightSpawn = true;
+            if (e.getKeyCode() == KeyEvent.VK_S) archerSpawn = true;
+            if (e.getKeyCode() == KeyEvent.VK_D) tankSpawn = true;
+            if (e.getKeyCode() == KeyEvent.VK_L) ENEMYknightSpawn = true;
+            if (e.getKeyCode() == KeyEvent.VK_K) ENEMYarcherSpawn = true;
+            if (e.getKeyCode() == KeyEvent.VK_J) ENEMYtankSpawn = true;
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_A) knightSpawn = false;
+            if (e.getKeyCode() == KeyEvent.VK_S) archerSpawn = false;
+            if (e.getKeyCode() == KeyEvent.VK_D) tankSpawn = false;
+            if (e.getKeyCode() == KeyEvent.VK_L) ENEMYknightSpawn = false;
+            if (e.getKeyCode() == KeyEvent.VK_K) ENEMYarcherSpawn = false;
+            if (e.getKeyCode() == KeyEvent.VK_J) ENEMYtankSpawn = false;
+        }
     }
 
-    public List<Knight> getKnights() {
-        return knights;
-    }
 
-    public List<Knight> getEnemyKnights() {
-        return enemyKnights;
-    }
-    public List<Archer> getArchers() {
-        return archers;
+
+    public List<Tank> getEnemyTanks() {
+        return enemyTanks;
     }
 
     public List<Archer> getEnemyArchers() {
         return enemyArchers;
     }
 
+    public List<Knight> getEnemyKnights() {
+        return enemyKnights;
+    }
+
     public List<Tank> getTanks() {
         return tanks;
     }
 
-    public List<Tank> getEnemyTanks() {
-        return enemyTanks;
+    public List<Archer> getArchers() {
+        return archers;
     }
 
-
-    public int getGameState() {
-        return gameState;
-    }
-    public int getPlayerGold() {
-        return playerGold;
+    public List<Knight> getKnights() {
+        return knights;
     }
 
-
-    public long getLastKnightSpawnTime() {
-        return lastKnightSpawnTime;
-    }
 
     public long getLastEnemyKnightSpawnTime() {
         return lastEnemyKnightSpawnTime;
@@ -386,19 +325,28 @@ public class MainLogic implements Runnable {
 
 
 
-
-    // Assuming you have these getter and setter methods:
-
-
-    // Example methods for handling gold
-    public void deductPlayerGold(int amount) {
-        playerGold -= amount;
+    public long getLastKnightSpawnTime() {
+        return lastKnightSpawnTime;
     }
 
-    public void deductEnemyGold(int amount) {
-        enemyGold -= amount;
+
+
+    public int getEnemyGold() {
+        return enemyGold;
+    }
+
+
+    public int getPlayerGold() {
+        return playerGold;
+    }
+
+
+
+
+
+    public int getGameState() {
+        return gameState;
     }
 
 
 }
-

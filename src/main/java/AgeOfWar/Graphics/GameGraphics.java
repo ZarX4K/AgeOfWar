@@ -13,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-import static AgeOfWar.Logic.MainLogic.getSpawnDelay;
 
 public class GameGraphics extends JFrame {
     private MainLogic mainLogic;

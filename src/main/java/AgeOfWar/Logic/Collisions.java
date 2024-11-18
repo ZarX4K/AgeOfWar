@@ -1,18 +1,14 @@
 package AgeOfWar.Logic;
 
 import AgeOfWar.Characters.BaseCharacterStats;
-import AgeOfWar.Characters.Knight;
-import AgeOfWar.Characters.Archer;
-import AgeOfWar.Characters.Tank;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Collisions {
-    private Attack attack;
-    private Hitboxes hitboxes;
-    private Moving moving;
-    private MainLogic mainLogic;
+    private final Attack attack;
+    private final Hitboxes hitboxes;
+    private final Moving moving;
+    private final MainLogic mainLogic;
 
     public Collisions(Moving moving, Hitboxes hitboxes, Attack attack, MainLogic mainLogic) {
         this.moving = moving;
@@ -21,56 +17,47 @@ public class Collisions {
         this.mainLogic = mainLogic;
     }
 
-    public void checkCollisions(List<BaseCharacterStats> allCharacters) {
-        List<BaseCharacterStats> defeatedCharacters = new ArrayList<>();
+    public void checkCollisions(List<? extends BaseCharacterStats> allies, List<? extends BaseCharacterStats> enemies) {
+        List<BaseCharacterStats> defeatedAllies = new ArrayList<>();
+        List<BaseCharacterStats> defeatedEnemies = new ArrayList<>();
 
-        // Use an iterator to handle removal during iteration
-        for (BaseCharacterStats character : new ArrayList<>(allCharacters)) {
-            if (!character.isAlive()) {
-                defeatedCharacters.add(character);
-                continue; // Skip dead characters
-            }
+        for (BaseCharacterStats ally : new ArrayList<>(allies)) {
+            BaseCharacterStats nearestEnemy = findNearestEnemy(ally, enemies);
 
-            BaseCharacterStats nearestEnemy = findNearestEnemy(character, allCharacters);
-            if (nearestEnemy != null && nearestEnemy.isAlive() && character.isEnemy() != nearestEnemy.isEnemy()) {
-                if (hitboxes.collides(character, nearestEnemy)) {
-                    attack.performAttack(character, nearestEnemy, allCharacters, mainLogic);
+            if (nearestEnemy != null && hitboxes.collides(ally, nearestEnemy)) {
+                moving.stopCharacter(ally);
+                moving.stopCharacter(nearestEnemy);
 
-                    // Add to defeated list if any character dies
-                    if (!nearestEnemy.isAlive()) defeatedCharacters.add(nearestEnemy);
-                    if (!character.isAlive()) defeatedCharacters.add(character);
+                attack.performAttack(ally, nearestEnemy, allies, enemies, mainLogic);
+
+                if (!ally.isAlive()) {
+                    defeatedAllies.add(ally);
+                }
+                if (!nearestEnemy.isAlive()) {
+                    defeatedEnemies.add(nearestEnemy);
                 }
             }
         }
 
-        // Remove all defeated characters after resolving collisions
-        for (BaseCharacterStats defeated : defeatedCharacters) {
-            allCharacters.remove(defeated);
-            mainLogic.awardGoldForKill(defeated);
-            System.out.println(defeated.getClass().getSimpleName() + " has been removed.");
-        }
-        defeatedCharacters.clear();  // Make sure the list is cleared after use
+        allies.removeAll(defeatedAllies);
+        enemies.removeAll(defeatedEnemies);
 
-
-        // After checking for collisions, resume moving for characters who are no longer fighting
-        for (BaseCharacterStats character : allCharacters) {
-            if (character.isAlive()) {
-                moving.moveCharacter(character, allCharacters);
-            }
+        // Award gold for defeated enemies
+        for (BaseCharacterStats defeatedEnemy : defeatedEnemies) {
+            mainLogic.awardGoldForKill(defeatedEnemy);
+            System.out.println(defeatedEnemy.getClass().getSimpleName() + " has been removed from the game.");
         }
     }
 
-    private BaseCharacterStats findNearestEnemy(BaseCharacterStats character, List<BaseCharacterStats> allCharacters) {
+    private BaseCharacterStats findNearestEnemy(BaseCharacterStats character, List<? extends BaseCharacterStats> enemies) {
         BaseCharacterStats nearestEnemy = null;
         int nearestDistance = Integer.MAX_VALUE;
 
-        for (BaseCharacterStats otherCharacter : allCharacters) {
-            if (otherCharacter != character && otherCharacter.isAlive() && otherCharacter.isEnemy() != character.isEnemy()) {
-                int distance = Math.abs(character.getX() - otherCharacter.getX());
-                if (distance < nearestDistance) {
-                    nearestDistance = distance;
-                    nearestEnemy = otherCharacter;
-                }
+        for (BaseCharacterStats enemy : enemies) {
+            int distance = Math.abs(character.getX() - enemy.getX());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestEnemy = enemy;
             }
         }
         return nearestEnemy;

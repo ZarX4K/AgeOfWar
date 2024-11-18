@@ -1,9 +1,6 @@
 package AgeOfWar.Logic;
 
 import AgeOfWar.Characters.BaseCharacterStats;
-import AgeOfWar.Characters.Archer;
-import AgeOfWar.Characters.Knight;
-import AgeOfWar.Characters.Tank;
 
 import java.util.List;
 import java.util.Random;
@@ -18,42 +15,45 @@ public class Attack {
         this.moving = moving;
     }
 
-    public void performAttack(BaseCharacterStats attacker, BaseCharacterStats defender, List<BaseCharacterStats> allCharacters, MainLogic mainLogic) {
+    public void performAttack(BaseCharacterStats attacker, BaseCharacterStats target, List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic) {
         long currentTime = System.currentTimeMillis();
 
-        if (attacker.isAlive() && defender.isAlive() && currentTime - attacker.getLastAttackTime() >= ATTACK_INTERVAL) {
-            if (attacker instanceof Archer) {
-                if (Math.abs(attacker.getX() - defender.getX()) <= ((Archer) attacker).getRange()) {
-                    defender.takeDamage(attacker.getDamage());
-                    System.out.println("Archer attacks from range!");
-                }
-            } else if (attacker instanceof Tank || attacker instanceof Knight) {
-                defender.takeDamage(attacker.getDamage());
-                System.out.println(attacker.getClass().getSimpleName() + " attacks in melee!");
-            }
-
+        if (attacker.isAlive() && target.isAlive() && currentTime - attacker.getLastAttackTime() >= ATTACK_INTERVAL) {
+            // Exchange damage
+            attacker.takeDamage(target.getDamage());
+            target.takeDamage(attacker.getDamage());
             attacker.setLastAttackTime(currentTime);
+            target.setLastAttackTime(currentTime);
 
-            // If the defender dies, reset combat state
-            if (!defender.isAlive()) {
-                attacker.setIsInCombat(false); // Reset the combat state for the attacker
-                System.out.println(attacker.getClass().getSimpleName() + " is no longer in combat.");
+            // Random health boost when both characters are close to death
+            if (!healthBoostApplied && attacker.getHealth() <= 100 && target.getHealth() <= 100) {
+                if (RANDOM.nextBoolean()) {
+                    attacker.setHealth(attacker.getHealth() + 25);
+                    System.out.println(attacker.getClass().getSimpleName() + " narrowly avoids defeat!");
+                } else {
+                    target.setHealth(target.getHealth() + 25);
+                    System.out.println(target.getClass().getSimpleName() + " narrowly avoids defeat!");
+                }
+                healthBoostApplied = true;
             }
-        }
-    }
 
-
-
-    public void handleHealthBoost(BaseCharacterStats character1, BaseCharacterStats character2) {
-        if (!healthBoostApplied && character1.getHealth() <= 100 && character2.getHealth() <= 100) {
-            if (RANDOM.nextBoolean()) {
-                character1.setHealth(character1.getHealth() + 25);
-                System.out.println(character1.getClass().getSimpleName() + " narrowly avoids death!");
+            // Handle defeated characters
+            if (attacker.getHealth() <= 0) {
+                team1.remove(attacker);
+                mainLogic.awardGoldForKill(attacker);
+                System.out.println(attacker.getClass().getSimpleName() + " defeated!");
             } else {
-                character2.setHealth(character2.getHealth() + 25);
-                System.out.println(character2.getClass().getSimpleName() + " narrowly avoids death!");
+                attacker.setMoving(true);
             }
-            healthBoostApplied = true;
+
+            if (target.getHealth() <= 0) {
+                team2.remove(target);
+                mainLogic.awardGoldForKill(target);
+                System.out.println(target.getClass().getSimpleName() + " defeated!");
+            } else {
+                target.setMoving(true);
+            }
         }
     }
+
 }
