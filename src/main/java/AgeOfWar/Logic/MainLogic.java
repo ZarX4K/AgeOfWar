@@ -74,7 +74,7 @@ public class MainLogic implements Runnable {
         music = new Music();
         moving = new Moving();
         hitboxes = new Hitboxes();
-        attack = new Attack(moving);
+        attack = new Attack();
         collisions = new Collisions(moving, hitboxes, attack, this);
 
         keyReader = new KeyReader();
@@ -136,17 +136,18 @@ public class MainLogic implements Runnable {
         spawnCharacter(enemyTanks, new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20), enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, true);
     }
 
-    private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold, long lastSpawnTime, long spawnDelay, boolean isEnemy) {
+    private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold,
+                                                               long lastSpawnTime, long spawnDelay, boolean isEnemy) {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastSpawnTime >= spawnDelay && gold >= character.priceBuy) {
             characterList.add(character);
             System.out.println(character.getClass().getSimpleName() + " spawned");
             if (isEnemy) deductEnemyGold(character.priceBuy);
             else deductPlayerGold(character.priceBuy);
-
-            moving.moveCharacter(character, new ArrayList<>(characterList));
+            lastSpawnTime = currentTime; // Update the spawn time
         }
     }
+
 
     // Update logic
     public void update() {
@@ -165,6 +166,7 @@ public class MainLogic implements Runnable {
         enemyKnights.forEach(knight -> moving.moveCharacter(knight, enemyKnights));
         enemyArchers.forEach(archer -> moving.moveCharacter(archer, enemyArchers));
         enemyTanks.forEach(tank -> moving.moveCharacter(tank, enemyTanks));
+
         gamePanel.repaint();
 
     }
