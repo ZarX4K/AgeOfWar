@@ -42,11 +42,6 @@ public class Collisions {
         allies.removeAll(defeatedAllies);
         enemies.removeAll(defeatedEnemies);
 
-        // Award gold for defeated enemies
-        for (BaseCharacterStats defeatedEnemy : defeatedEnemies) {
-            mainLogic.awardGoldForKill(defeatedEnemy);
-            System.out.println(defeatedEnemy.getClass().getSimpleName() + " has been removed from the game.");
-        }
     }
 
     private BaseCharacterStats findNearestEnemy(BaseCharacterStats character, List<? extends BaseCharacterStats> enemies) {

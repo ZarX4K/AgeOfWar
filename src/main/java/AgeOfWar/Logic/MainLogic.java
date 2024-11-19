@@ -136,18 +136,17 @@ public class MainLogic implements Runnable {
         spawnCharacter(enemyTanks, new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20), enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, true);
     }
 
-    private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold,
-                                                               long lastSpawnTime, long spawnDelay, boolean isEnemy) {
+    private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold, long lastSpawnTime, long spawnDelay, boolean isEnemy) {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastSpawnTime >= spawnDelay && gold >= character.priceBuy) {
             characterList.add(character);
             System.out.println(character.getClass().getSimpleName() + " spawned");
             if (isEnemy) deductEnemyGold(character.priceBuy);
             else deductPlayerGold(character.priceBuy);
-            lastSpawnTime = currentTime; // Update the spawn time
+
+            moving.moveCharacter(character, new ArrayList<>(characterList));
         }
     }
-
 
     // Update logic
     public void update() {
@@ -160,15 +159,24 @@ public class MainLogic implements Runnable {
         removeDefeatedCharacters(enemyKnights);
         removeDefeatedCharacters(enemyArchers);
         removeDefeatedCharacters(enemyTanks);
-        knights.forEach(knight -> moving.moveCharacter(knight, knights));
-        archers.forEach(archer -> moving.moveCharacter(archer, archers));
-        tanks.forEach(tank -> moving.moveCharacter(tank, tanks));
-        enemyKnights.forEach(knight -> moving.moveCharacter(knight, enemyKnights));
-        enemyArchers.forEach(archer -> moving.moveCharacter(archer, enemyArchers));
-        enemyTanks.forEach(tank -> moving.moveCharacter(tank, enemyTanks));
+        List<BaseCharacterStats> allAllies = new ArrayList<>();
+        allAllies.addAll(knights);
+        allAllies.addAll(archers);
+        allAllies.addAll(tanks);
 
+        List<BaseCharacterStats> allEnemies = new ArrayList<>();
+        allEnemies.addAll(enemyKnights);
+        allEnemies.addAll(enemyArchers);
+        allEnemies.addAll(enemyTanks);
+
+        for (BaseCharacterStats ally : allAllies) {
+            moving.moveCharacter(ally, allAllies); // Ensuring infront method is called
+        }
+
+        for (BaseCharacterStats enemy : allEnemies) {
+            moving.moveCharacter(enemy, allEnemies); // Ensuring infront method is called
+        }
         gamePanel.repaint();
-
     }
 
     private void handleSpawning() {

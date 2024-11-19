@@ -1,3 +1,4 @@
+
 package AgeOfWar.Characters;
 
 import javax.swing.*;
@@ -19,13 +20,11 @@ public class BaseCharacterStats {
     protected Image standImage;
     protected Image walkImage;
     protected Image attackImage;
-    private boolean defeated; // Add a defeated flag
-
-
+    private boolean defeated;
     private static final Color HEALTH_BAR_BACKGROUND_COLOR = Color.RED;
     private static final Color HEALTH_BAR_FOREGROUND_COLOR = Color.GREEN;
-    private static final int HEALTH_BAR_HEIGHT = 35; // Height of the health bar
-    private static final int HEALTH_BAR_WIDTH = 4;  // Width of the health bar
+    private static final int HEALTH_BAR_HEIGHT = 35;
+    private static final int HEALTH_BAR_WIDTH = 4;
 
     public BaseCharacterStats(int x, int y, int width, int height, String standImagePath, String walkImagePath, String attackImagePath, int health, int damage, int priceBuy, int moveSpeed, boolean isMoving, boolean isEnemy, boolean isInCombat, boolean defeated) {
         this.x = x;
@@ -46,30 +45,19 @@ public class BaseCharacterStats {
     }
 
     public void draw(Graphics g) {
-        // Draw the character image
         g.drawImage(walkImage, x, y, width, height, null);
-
-        // Draw vertical health bar above the character
         drawHealthBar(g);
     }
-    public boolean isDefeated() {
-        return defeated;
-    }
 
-    public void setDefeated(boolean defeated) {
-        this.defeated = defeated;
-    }
+
     private void drawHealthBar(Graphics g) {
-        // Calculate the health bar's current health height
-        int barCurrentHeight = (int) (((double) health / getMaxHealth()) * HEALTH_BAR_HEIGHT);
-        int barX = x + (width / 2) - (HEALTH_BAR_WIDTH / 2); // Center the health bar horizontally above the character
-        int barY = y - HEALTH_BAR_HEIGHT - 5; // Position the bar directly above the character's head
-
-        // Draw a red background bar
+        double healthPercentage = (double) health / getMaxHealth();
+        int barCurrentHeight = (int) (healthPercentage * HEALTH_BAR_HEIGHT);
+        barCurrentHeight = Math.max(0, barCurrentHeight);
+        int barX = x + (width / 2) - (HEALTH_BAR_WIDTH / 2);
+        int barY = y - HEALTH_BAR_HEIGHT - 5;
         g.setColor(HEALTH_BAR_BACKGROUND_COLOR);
         g.fillRect(barX, barY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
-
-        // Draw a green foreground bar (representing current health)
         g.setColor(HEALTH_BAR_FOREGROUND_COLOR);
         g.fillRect(barX, barY + (HEALTH_BAR_HEIGHT - barCurrentHeight), HEALTH_BAR_WIDTH, barCurrentHeight);
     }
@@ -77,17 +65,23 @@ public class BaseCharacterStats {
     public void takeDamage(int damage) {
         this.health -= damage;
     }
+
     public boolean isInCombat() {
         return isInCombat;
     }
-    public int getGoldReward() {
-        return this.priceBuy; // Define this in the character stats
+
+    public boolean isDefeated() {
+        return defeated;
     }
 
-    // Setter for isInCombat
-    public void setIsInCombat(boolean isInCombat) {
-        this.isInCombat = isInCombat;
+    public void setDefeated(boolean defeated) {
+        this.defeated = defeated;
     }
+
+    public int getGoldReward() {
+        return this.priceBuy;
+    }
+
 
     public boolean isAlive() {
         return this.health > 0;
@@ -120,7 +114,6 @@ public class BaseCharacterStats {
     public void setLastAttackTime(long lastAttackTime) {
         this.lastAttackTime = lastAttackTime;
     }
-
 
     public int getX() {
         return x;
@@ -166,14 +159,7 @@ public class BaseCharacterStats {
         this.health = health;
     }
 
-    // Assuming there's a notion of maximum health for each character
     public int getMaxHealth() {
-        return 100;  // Replace with actual max health logic if different per character
+        return 100;
     }
-
-    public int getPriceBuy() {
-        return 0;
-    }
-
-
 }

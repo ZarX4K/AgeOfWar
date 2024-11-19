@@ -15,15 +15,8 @@ public class Attack {
         // Initialization if needed
     }
 
-    /**
-     * Perform a melee attack between two characters (one attacker and one target).
-     *
-     * @param attacker  the attacking character
-     * @param target    the target character
-     * @param team1     the team to which the attacker belongs
-     * @param team2     the team to which the target belongs
-     * @param mainLogic the main logic of the game (used for gold awarding)
-     */
+
+
     public void performAttack(BaseCharacterStats attacker, BaseCharacterStats target, List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic) {
         long currentTime = System.currentTimeMillis();
 
@@ -48,16 +41,16 @@ public class Attack {
 
             // Handle defeated characters and remove them from their respective teams
             if (attacker.getHealth() <= 0) {
-                team1.remove(attacker);
                 mainLogic.awardGoldForKill(attacker);
+                team1.remove(attacker);
                 System.out.println(attacker.getClass().getSimpleName() + " defeated!");
             } else {
                 attacker.setMoving(true);  // If alive, resume movement
             }
 
             if (target.getHealth() <= 0) {
-                team2.remove(target);
                 mainLogic.awardGoldForKill(target);
+                team2.remove(target);
                 System.out.println(target.getClass().getSimpleName() + " defeated!");
             } else {
                 target.setMoving(true);  // If alive, resume movement
@@ -65,12 +58,7 @@ public class Attack {
         }
     }
 
-    /**
-     * Perform a ranged attack by an archer on a target.
-     *
-     * @param archer the attacking archer character
-     * @param target the target character
-     */
+
     public void performRangedAttack(Archer archer, BaseCharacterStats target) {
         long currentTime = System.currentTimeMillis();
 
