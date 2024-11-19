@@ -10,12 +10,12 @@ import java.util.List;
 public class MainLogic implements Runnable {
 
     // Constants
-    private static final long KNIGHT_SPAWN_DELAY = 1500;
-    private static final long ARCHER_SPAWN_DELAY = 2000;
-    private static final long  TANK_SPAWN_DELAY = 4000;
-    private static final long ENEMY_KNIGHT_SPAWN_DELAY = 1500; // Example value
-    private static final long ENEMY_ARCHER_SPAWN_DELAY = 2000; // Example value
-    private static final long ENEMY_TANK_SPAWN_DELAY = 4000; // Example value
+    public static final long KNIGHT_SPAWN_DELAY = 1500;
+    public static final long ARCHER_SPAWN_DELAY = 2000;
+    public static final long  TANK_SPAWN_DELAY = 4000;
+    public static final long ENEMY_KNIGHT_SPAWN_DELAY = 1500; // Example value
+    public static final long ENEMY_ARCHER_SPAWN_DELAY = 2000; // Example value
+    public static final long ENEMY_TANK_SPAWN_DELAY = 4000; // Example value
     private static final int FPS = 60;
     private static final double DRAW_INTERVAL = 1000000000.0 / FPS;
 

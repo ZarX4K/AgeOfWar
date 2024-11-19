@@ -94,7 +94,9 @@ public class GameGraphics extends JFrame {
                 g.drawString("Coins: " + mainLogic.getPlayerGold(), 20, 220);
                 g.drawString("Coins: " + mainLogic.getEnemyGold(), 1550, 220);
 
-
+                // Draw hotbars
+             //   drawPlayerHotbar(g);
+            //    drawEnemyHotbar(g);
             }
         }
     }
