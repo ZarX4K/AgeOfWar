@@ -45,11 +45,6 @@ public class GameGraphics extends JFrame {
         setVisible(true);
     }
 
-    private void drawCharacters(Graphics g, List<? extends BaseCharacterStats> characters) {
-        for (BaseCharacterStats character : characters) {
-            character.draw(g); // Use character's draw method including health bar
-        }
-    }
 
     private class GamePanel extends JPanel {
         private MainLogic mainLogic;
@@ -60,13 +55,6 @@ public class GameGraphics extends JFrame {
             setFocusable(true);
         }
 
-        private void drawCharacters(Graphics g, List<? extends BaseCharacterStats> characters) {
-            for (BaseCharacterStats character : characters) {
-                character.draw(g); // Use character's draw method including health bar
-            }
-        }
-
-
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -76,6 +64,7 @@ public class GameGraphics extends JFrame {
                 backGroundScreens.getIntroImageIcon().paintIcon(this, g, 0, 0);
             } else if (mainLogic.getGameState() == 2) {
                 g.drawImage(backGroundScreens.getBackgroundImage(), 0, 0, null);
+
 
                 // Draw player and enemy knights
                 for (Knight knight : mainLogic.getKnights()) {
@@ -105,48 +94,7 @@ public class GameGraphics extends JFrame {
                 g.drawString("Coins: " + mainLogic.getPlayerGold(), 20, 220);
                 g.drawString("Coins: " + mainLogic.getEnemyGold(), 1550, 220);
 
-                // Calculate and display spawn readiness bars
-                long currentTime = System.currentTimeMillis();
 
-                // Player's spawn bar
-                long knightSpawnProgress = currentTime - mainLogic.getLastKnightSpawnTime();
-                int barWidth = 250;
-                int barHeight = 15;
-                int barX = 500;
-                int barY = 60;
-
-                g.setColor(Color.RED);
-                int filledWidth = Math.min((int) (barWidth * knightSpawnProgress / MainLogic.getSpawnDelay("knight")), barWidth);
-                g.fillRect(barX, barY, filledWidth, barHeight);
-
-                if (filledWidth == barWidth) {
-                    g.setColor(Color.GREEN);
-                    g.fillRect(barX, barY, barWidth, barHeight);
-                }
-
-                // Draw outline for player's spawn bar
-                g.setColor(Color.BLACK);
-                g.drawRect(barX, barY, barWidth, barHeight);
-
-                // Enemy's spawn bar
-                long enemyKnightSpawnProgress = currentTime - mainLogic.getLastEnemyKnightSpawnTime();
-                int enemyBarWidth = 250;
-                int enemyBarHeight = 15;
-                int enemyBarX = 1170 - enemyBarWidth; // Same x-position but mirrored for right-to-left loading
-                int enemyBarY = 60;
-
-                g.setColor(Color.RED);
-                int enemyFilledWidth = Math.min((int) (enemyBarWidth * enemyKnightSpawnProgress / MainLogic.getSpawnDelay("knight")), enemyBarWidth);
-                g.fillRect(enemyBarX + (enemyBarWidth - enemyFilledWidth), enemyBarY, enemyFilledWidth, enemyBarHeight);
-
-                if (enemyFilledWidth == enemyBarWidth) {
-                    g.setColor(Color.GREEN);
-                    g.fillRect(enemyBarX, enemyBarY, enemyBarWidth, enemyBarHeight);
-                }
-
-                // Draw outline for enemy's spawn bar
-                g.setColor(Color.BLACK);
-                g.drawRect(enemyBarX, enemyBarY, enemyBarWidth, enemyBarHeight);
             }
         }
     }

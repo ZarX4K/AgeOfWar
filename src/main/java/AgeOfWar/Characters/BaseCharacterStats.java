@@ -162,4 +162,8 @@ public class BaseCharacterStats {
     public int getMaxHealth() {
         return 100;
     }
+
+    public int getPriceBuy() {
+        return priceBuy;
+    }
 }

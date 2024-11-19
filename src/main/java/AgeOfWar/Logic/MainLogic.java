@@ -12,7 +12,10 @@ public class MainLogic implements Runnable {
     // Constants
     private static final long KNIGHT_SPAWN_DELAY = 1500;
     private static final long ARCHER_SPAWN_DELAY = 2000;
-    private static final long TANK_SPAWN_DELAY = 4000;
+    private static final long  TANK_SPAWN_DELAY = 4000;
+    private static final long ENEMY_KNIGHT_SPAWN_DELAY = 1500; // Example value
+    private static final long ENEMY_ARCHER_SPAWN_DELAY = 2000; // Example value
+    private static final long ENEMY_TANK_SPAWN_DELAY = 4000; // Example value
     private static final int FPS = 60;
     private static final double DRAW_INTERVAL = 1000000000.0 / FPS;
 
@@ -23,12 +26,18 @@ public class MainLogic implements Runnable {
     private int enemyGold = 500;
 
     // Time tracking
-    private long lastKnightSpawnTime = 0;
-    private long lastArcherSpawnTime = 0;
-    private long lastTankSpawnTime = 0;
-    private long lastEnemyKnightSpawnTime = 0;
-    private long lastEnemyArcherSpawnTime = 0;
-    private long lastEnemyTankSpawnTime = 0;
+private long lastKnightSpawnTime = 0;
+private long lastArcherSpawnTime = 0;
+private long lastTankSpawnTime = 0;
+private long lastEnemyKnightSpawnTime = 0;
+private long lastEnemyArcherSpawnTime = 0;
+private long lastEnemyTankSpawnTime = 0;
+private long knightCooldownEnd = 0;
+private long archerCooldownEnd = 0;
+private long tankCooldownEnd = 0;
+private long enemyKnightCooldownEnd = 0;
+private long enemyArcherCooldownEnd = 0;
+private long enemyTankCooldownEnd = 0;
     private long currentTime;
     private double delta = 0;
     private long lastTime = System.nanoTime();
@@ -113,27 +122,69 @@ public class MainLogic implements Runnable {
 
     // Spawning methods
     private void spawnKnight() {
-        spawnCharacter(knights, new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, false, 10), playerGold, lastKnightSpawnTime, KNIGHT_SPAWN_DELAY, false);
+        Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, false, 10);
+        if (isSpawnAvailable(playerGold, lastKnightSpawnTime, KNIGHT_SPAWN_DELAY, knight.getPriceBuy())) {
+            knights.add(knight);
+            deductPlayerGold(knight.getPriceBuy());
+lastKnightSpawnTime = System.currentTimeMillis();
+knightCooldownEnd = lastKnightSpawnTime + KNIGHT_SPAWN_DELAY;
+            moving.moveCharacter(knight, new ArrayList<>(knights));
+        }
     }
 
     private void spawnArcher() {
-        spawnCharacter(archers, new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 5, 10), playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, false);
+        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 5, 10);
+        if (isSpawnAvailable(playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, archer.getPriceBuy())) {
+            archers.add(archer);
+            deductPlayerGold(archer.getPriceBuy());
+lastArcherSpawnTime = System.currentTimeMillis();
+archerCooldownEnd = lastArcherSpawnTime + ARCHER_SPAWN_DELAY;
+            moving.moveCharacter(archer, new ArrayList<>(archers));
+        }
     }
 
     private void spawnTank() {
-        spawnCharacter(tanks, new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, false, false, 10, 20, 20), playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, false);
+        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, false, false, 10, 20, 20);
+        if (isSpawnAvailable(playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, tank.getPriceBuy())) {
+            tanks.add(tank);
+            deductPlayerGold(tank.getPriceBuy());
+lastTankSpawnTime = System.currentTimeMillis();
+tankCooldownEnd = lastTankSpawnTime + TANK_SPAWN_DELAY;
+            moving.moveCharacter(tank, new ArrayList<>(tanks));
+        }
     }
 
     private void spawnEnemyKnight() {
-        spawnCharacter(enemyKnights, new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false, false, 10), enemyGold, lastEnemyKnightSpawnTime, KNIGHT_SPAWN_DELAY, true);
+        Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false, false, 10);
+        if (isEnemySpawnAvailable(enemyGold, lastEnemyKnightSpawnTime, KNIGHT_SPAWN_DELAY, enemyKnight.getPriceBuy())) {
+            enemyKnights.add(enemyKnight);
+            deductEnemyGold(enemyKnight.getPriceBuy());
+lastEnemyKnightSpawnTime = System.currentTimeMillis();
+enemyKnightCooldownEnd = lastEnemyKnightSpawnTime + KNIGHT_SPAWN_DELAY;
+            moving.moveCharacter(enemyKnight, new ArrayList<>(enemyKnights));
+        }
     }
 
     private void spawnEnemyArcher() {
-        spawnCharacter(enemyArchers, new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 5, 10), enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, true);
+        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 5, 10);
+        if (isEnemySpawnAvailable(enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, enemyArcher.getPriceBuy())) {
+            enemyArchers.add(enemyArcher);
+            deductEnemyGold(enemyArcher.getPriceBuy());
+lastEnemyArcherSpawnTime = System.currentTimeMillis();
+enemyArcherCooldownEnd = lastEnemyArcherSpawnTime + ARCHER_SPAWN_DELAY;
+            moving.moveCharacter(enemyArcher, new ArrayList<>(enemyArchers));
+        }
     }
 
     private void spawnEnemyTank() {
-        spawnCharacter(enemyTanks, new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20), enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, true);
+        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20);
+        if (isEnemySpawnAvailable(enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, enemyTank.getPriceBuy())) {
+            enemyTanks.add(enemyTank);
+            deductEnemyGold(enemyTank.getPriceBuy());
+lastEnemyTankSpawnTime = System.currentTimeMillis();
+enemyTankCooldownEnd = lastEnemyTankSpawnTime + TANK_SPAWN_DELAY;
+            moving.moveCharacter(enemyTank, new ArrayList<>(enemyTanks));
+        }
     }
 
     private <T extends BaseCharacterStats> void spawnCharacter(List<T> characterList, T character, int gold, long lastSpawnTime, long spawnDelay, boolean isEnemy) {
@@ -147,10 +198,20 @@ public class MainLogic implements Runnable {
             moving.moveCharacter(character, new ArrayList<>(characterList));
         }
     }
+    private boolean isSpawnAvailable(int gold, long lastSpawnTime, long spawnDelay, int price) {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastSpawnTime >= spawnDelay && gold >= price &&
+                currentTime >= knightCooldownEnd && currentTime >= archerCooldownEnd && currentTime >= tankCooldownEnd);
+    }
+    private boolean isEnemySpawnAvailable(int gold, long lastSpawnTime, long spawnDelay, int price) {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastSpawnTime >= spawnDelay && gold >= price &&
+                currentTime >= enemyKnightCooldownEnd && currentTime >= enemyArcherCooldownEnd && currentTime >= enemyTankCooldownEnd);
+    }
 
     // Update logic
     public void update() {
-        handleSpawning();
+            handleSpawning();
         handleCollisions();
 
         removeDefeatedCharacters(knights);
@@ -329,13 +390,13 @@ public class MainLogic implements Runnable {
     }
 
 
-    public long getLastEnemyKnightSpawnTime() {
+    public  long getLastEnemyKnightSpawnTime() {
         return lastEnemyKnightSpawnTime;
     }
 
 
 
-    public long getLastKnightSpawnTime() {
+    public  long getLastKnightSpawnTime() {
         return lastKnightSpawnTime;
     }
 
@@ -358,5 +419,19 @@ public class MainLogic implements Runnable {
         return gameState;
     }
 
+    public  long getLastArcherSpawnTime() {
+        return lastArcherSpawnTime;
+    }
 
+    public  long getLastTankSpawnTime() {
+        return lastTankSpawnTime;
+    }
+
+    public  long getLastEnemyArcherSpawnTime() {
+        return lastEnemyArcherSpawnTime;
+    }
+
+    public  long getLastEnemyTankSpawnTime() {
+        return lastEnemyTankSpawnTime;
+    }
 }
