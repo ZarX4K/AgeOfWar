@@ -91,7 +91,7 @@ public class Attack {
             // Stop character movement when attacking the castle
             character.setMoving(false);
 
-            System.out.println(character.getClass().getSimpleName() + " is attacking the castle!");
+            System.out.println(character.getClass().getSimpleName() + " is attacking the castle!!");
         }
     }
 }
