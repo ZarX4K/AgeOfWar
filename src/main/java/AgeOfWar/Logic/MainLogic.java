@@ -126,7 +126,7 @@ public class MainLogic implements Runnable {
 
     // Spawning methods
     private void spawnKnight() {
-        Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, false, 10);
+        Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 15, 25, 1, true, false, false, false, 25);
         if (isSpawnAvailable(playerGold, lastKnightSpawnTime, KNIGHT_SPAWN_DELAY, knight.getPriceBuy())) {
             knights.add(knight);
             deductPlayerGold(knight.getPriceBuy());
@@ -137,7 +137,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnArcher() {
-        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 5, 10);
+        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 10, 50, 1, true, false, false, false, 20, 10);
         if (isSpawnAvailable(playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, archer.getPriceBuy())) {
             archers.add(archer);
             deductPlayerGold(archer.getPriceBuy());
@@ -148,7 +148,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnTank() {
-        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, false, false, 10, 20, 20);
+        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 200, 30, 100, 1, true, false, false, false, 40, 20, 10);
         if (isSpawnAvailable(playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, tank.getPriceBuy())) {
             tanks.add(tank);
             deductPlayerGold(tank.getPriceBuy());
@@ -159,7 +159,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyKnight() {
-        Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false, false, 10);
+        Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 15, 25, 1, true, true, false, false, 25);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyKnightSpawnTime, KNIGHT_SPAWN_DELAY, enemyKnight.getPriceBuy())) {
             enemyKnights.add(enemyKnight);
             deductEnemyGold(enemyKnight.getPriceBuy());
@@ -170,7 +170,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyArcher() {
-        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 5, 10);
+        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 10, 50, 1, true, true, false, false, 20, 10);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, enemyArcher.getPriceBuy())) {
             enemyArchers.add(enemyArcher);
             deductEnemyGold(enemyArcher.getPriceBuy());
@@ -181,7 +181,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyTank() {
-        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 15, 10, 20);
+        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 200, 30, 100, 1, true, true, false, false, 40, 5, 20);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, enemyTank.getPriceBuy())) {
             enemyTanks.add(enemyTank);
             deductEnemyGold(enemyTank.getPriceBuy());
