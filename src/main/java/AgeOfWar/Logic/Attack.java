@@ -1,15 +1,12 @@
 package AgeOfWar.Logic;
 
-import AgeOfWar.Characters.Archer;
-import AgeOfWar.Characters.BaseCharacterStats;
-import AgeOfWar.Characters.Castle;
+import AgeOfWar.Characters.*;
 import java.util.List;
 import java.util.Random;
 
 public class Attack {
     private static final long ATTACK_INTERVAL = 500; // Milliseconds between attacks
     private static final Random RANDOM = new Random();
-
     private boolean healthBoostApplied = false;
 
     public Attack() {
@@ -20,37 +17,51 @@ public class Attack {
         long currentTime = System.currentTimeMillis();
 
         if (attacker.isAlive() && target.isAlive() && currentTime - attacker.getLastAttackTime() >= ATTACK_INTERVAL) {
-            attacker.takeDamage(target.getDamage());
-            target.takeDamage(attacker.getDamage());
+            int damageDealt = getDamageWithCritical(attacker);
+            target.takeDamage(damageDealt);
+
+            int targetDamage = getDamageWithCritical(target);
+            attacker.takeDamage(targetDamage);
+
             attacker.setLastAttackTime(currentTime);
             target.setLastAttackTime(currentTime);
 
             if (!healthBoostApplied && attacker.getHealth() <= 100 && target.getHealth() <= 100) {
-                if (RANDOM.nextBoolean()) {
-                    attacker.setHealth(attacker.getHealth() + 25);
-                    System.out.println(attacker.getClass().getSimpleName() + " narrowly avoids defeat!");
-                } else {
-                    target.setHealth(target.getHealth() + 25);
-                    System.out.println(target.getClass().getSimpleName() + " narrowly avoids defeat!");
-                }
-                healthBoostApplied = true;
+                applyHealthBoost(attacker, target);
             }
 
-            if (attacker.getHealth() <= 0) {
-                mainLogic.awardGoldForKill(attacker);
-                team1.remove(attacker);
-                System.out.println(attacker.getClass().getSimpleName() + " defeated!");
-            } else {
-                attacker.setMoving(true);
-            }
+            handleDefeat(attacker, team1, mainLogic);
+            handleDefeat(target, team2, mainLogic);
+        }
+    }
 
-            if (target.getHealth() <= 0) {
-                mainLogic.awardGoldForKill(target);
-                team2.remove(target);
-                System.out.println(target.getClass().getSimpleName() + " defeated!");
-            } else {
-                target.setMoving(true);
-            }
+    private int getDamageWithCritical(BaseCharacterStats character) {
+        int damage = character.getDamage();
+        if (character instanceof Knight && ((Knight) character).isCriticalHit()) {
+            damage += ((Knight) character).getCritical();
+            System.out.println(character.getClass().getSimpleName() + " landed a critical hit!" +getDamageWithCritical(character));
+        }
+        return damage;
+    }
+
+    private void applyHealthBoost(BaseCharacterStats attacker, BaseCharacterStats target) {
+        if (RANDOM.nextBoolean()) {
+            attacker.setHealth(attacker.getHealth() + 25);
+            System.out.println(attacker.getClass().getSimpleName() + " narrowly avoids defeat!");
+        } else {
+            target.setHealth(target.getHealth() + 25);
+            System.out.println(target.getClass().getSimpleName() + " narrowly avoids defeat!");
+        }
+        healthBoostApplied = true;
+    }
+
+    private void handleDefeat(BaseCharacterStats character, List<? extends BaseCharacterStats> team, MainLogic mainLogic) {
+        if (character.getHealth() <= 0) {
+            mainLogic.awardGoldForKill(character);
+            team.remove(character);
+            System.out.println(character.getClass().getSimpleName() + " defeated!");
+        } else {
+            character.setMoving(true);
         }
     }
 
@@ -58,7 +69,8 @@ public class Attack {
         long currentTime = System.currentTimeMillis();
 
         if (archer.isAlive() && target.isAlive() && currentTime - archer.getLastAttackTime() >= ATTACK_INTERVAL) {
-            target.takeDamage(archer.getDamage());
+            int damageDealt = getDamageWithCritical(archer);
+            target.takeDamage(damageDealt);
             archer.setLastAttackTime(currentTime);
 
             System.out.println(archer.getClass().getSimpleName() + " attacks " + target.getClass().getSimpleName() + " from range!");
