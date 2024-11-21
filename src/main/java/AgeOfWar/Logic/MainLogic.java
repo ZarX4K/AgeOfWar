@@ -41,18 +41,7 @@ public class MainLogic implements Runnable {
     private long currentTime;
     private double delta = 0;
     private long lastTime = System.nanoTime();
-    public static long getSpawnDelay(String characterType) {
-        switch (characterType.toLowerCase()) {
-            case "knight":
-                return KNIGHT_SPAWN_DELAY;
-            case "archer":
-                return ARCHER_SPAWN_DELAY;
-            case "tank":
-                return TANK_SPAWN_DELAY;
-            default:
-                throw new IllegalArgumentException("Unknown character type: " + characterType);
-        }
-    }
+
 
 
     // Game components
@@ -101,7 +90,7 @@ public class MainLogic implements Runnable {
 
     private void setupGamePanel() {
         gamePanel.setFocusable(true);
-        gamePanel.addKeyListener(keyReader);
+        gamePanel.addKeyListener(keyReader);  // Attach the KeyListener to the game panel
         gamePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -255,14 +244,14 @@ public class MainLogic implements Runnable {
         if (playerCastle.getHealth() <= 0 && gameState != 3) {
             gameState = 3; // Switch to Game Over state
             music.stopMusic(); // Stop any music playing
-            music.loadMusic("gameover.wav"); // Load a Game Over music or sound effect
+           // music.loadMusic("gameover.wav"); // Load a Game Over music or sound effect
             music.playMusic(); // Play the Game Over sound
             return; // Stop game logic to prevent further actions
         }
         if (enemyCastle.getHealth() <= 0 && gameState != 4) {
             gameState = 4; // Switch to Game Over state
             music.stopMusic(); // Stop any music playing
-            music.loadMusic("gameover.wav"); // Load a Game Over music or sound effect
+            //music.loadMusic("gameover.wav"); // Load a Game Over music or sound effect
             music.playMusic(); // Play the Game Over sound
             return; // Stop game logic to prevent further actions
         }
@@ -408,7 +397,11 @@ public class MainLogic implements Runnable {
         music.stopMusic();
         music.loadMusic("intro1.wav");
         music.playMusic();
+
+        // Re-setup the game panel with key and mouse listeners
+        setupGamePanel();  // Ensures gamePanel is reconfigured with listeners
     }
+
 
 
     // Key handling
