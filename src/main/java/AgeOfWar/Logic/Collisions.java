@@ -30,10 +30,11 @@ public class Collisions {
         checkCharacterCollisions(allies, enemies, defeatedAllies, defeatedEnemies);
         checkCharacterCollisions(enemies, allies, defeatedEnemies, defeatedAllies);
 
-        // Remove defeated characters from the lists
+        // Remove defeated characters from the lists after the iteration to avoid ConcurrentModificationException
         allies.removeAll(defeatedAllies);
         enemies.removeAll(defeatedEnemies);
     }
+
 
     private void checkCastleCollisions(List<? extends BaseCharacterStats> characters, List<BaseCharacterStats> defeatedCharacters, Castle castle, List<? extends BaseCharacterStats> opponentCharacters) {
         for (BaseCharacterStats character : new ArrayList<>(characters)) {

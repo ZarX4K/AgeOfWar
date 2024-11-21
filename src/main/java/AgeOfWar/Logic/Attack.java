@@ -109,4 +109,5 @@ public class Attack {
             System.out.println(character.getClass().getSimpleName() + " is attacking the castle!!");
         }
     }
+
 }
