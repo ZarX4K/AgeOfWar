@@ -278,6 +278,7 @@ public class MainLogic implements Runnable {
         for (BaseCharacterStats enemy : allEnemies) {
             moving.moveCharacter(enemy, allEnemies); // Ensuring infront method is called
         }
+
         gamePanel.repaint();
     }
 
@@ -439,19 +440,6 @@ public class MainLogic implements Runnable {
         return knights;
     }
 
-
-    public  long getLastEnemyKnightSpawnTime() {
-        return lastEnemyKnightSpawnTime;
-    }
-
-
-
-    public  long getLastKnightSpawnTime() {
-        return lastKnightSpawnTime;
-    }
-
-
-
     public int getEnemyGold() {
         return enemyGold;
     }
@@ -466,25 +454,7 @@ public class MainLogic implements Runnable {
     }
 
 
-
-
     public int getGameState() {
         return gameState;
     }
-
-    public  long getLastArcherSpawnTime() {
-        return lastArcherSpawnTime;
     }
-
-    public  long getLastTankSpawnTime() {
-        return lastTankSpawnTime;
-    }
-
-    public  long getLastEnemyArcherSpawnTime() {
-        return lastEnemyArcherSpawnTime;
-    }
-
-    public  long getLastEnemyTankSpawnTime() {
-        return lastEnemyTankSpawnTime;
-    }
-}
