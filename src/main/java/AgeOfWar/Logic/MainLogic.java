@@ -84,7 +84,7 @@ public class MainLogic implements Runnable {
         setupGamePanel();
 
         playerCastle = new Castle(-100, 600, 400, 400, 500,"FortressP.png");  // Player's castle at the left bottom
-        enemyCastle = new Castle(1400, 600, 400, 400, 500,"FortressE.png");  // Enemy's castle at the right bottom
+        enemyCastle = new Castle(1400, 600, 400, 400, 500,"FortressE.png");  // Enemy's castle at the right bottomm
 
     }
 
