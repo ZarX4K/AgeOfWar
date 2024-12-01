@@ -11,25 +11,27 @@ public class Projectile {
     private BaseCharacterStats shooter; // The entity that fired the projectile
     private Image image; // Visual representation of the projectile
     private boolean active; // Whether the projectile is active in the game
+    private int width, height; // Width and height for scaling
 
-    public Projectile(BaseCharacterStats shooter, double velocityMultiplier, String imageName) {
+    public Projectile(int width, int height, BaseCharacterStats shooter, double velocityMultiplier, String imageName) {
+        this.width = width;
+        this.height = height;
         this.shooter = shooter;
         this.damage = shooter.getDamage();
         this.active = true;
 
         // Spawn position slightly ahead of the shooter
-        this.x = shooter.getX() + (!shooter.isEnemy ? shooter.getWidth() : -20);
+        this.x = shooter.getX() + (!shooter.isEnemy() ? shooter.getWidth() : -20);
         this.y = shooter.getY() + shooter.getHeight() / 2;
 
         // Velocity based on the shooter's facing direction
-        this.velocityX = (shooter.isEnemy ? 1 : -1) * velocityMultiplier;
+        this.velocityX = (shooter.isEnemy() ? 1 : -1) * velocityMultiplier;
         this.velocityY = 0;
 
         // Load projectile image and assign to the 'image' field
         ImageIcon projectileImage = new ImageIcon(getClass().getClassLoader().getResource(imageName));
         this.image = projectileImage.getImage();  // Assigning the image to the 'image' field
     }
-
 
     public void update() {
         if (!active) return;
@@ -46,13 +48,14 @@ public class Projectile {
 
     public void draw(Graphics g, ImageObserver observer) {
         if (active) {
-            g.drawImage(image, (int) x, (int) y, observer);
+            // Scale the image by the specified width and height
+            g.drawImage(image, (int) x, (int) y, width, height, observer);
         }
     }
 
     public boolean checkCollision(Rectangle targetBounds) {
         if (!active) return false;
-        Rectangle projectileBounds = new Rectangle((int) x, (int) y, image.getWidth(null), image.getHeight(null));
+        Rectangle projectileBounds = new Rectangle((int) x, (int) y, width, height);
         return projectileBounds.intersects(targetBounds);
     }
 

@@ -122,11 +122,8 @@ public class MainLogic implements Runnable {
         if (shooter == null) return;
 
         // Create a new projectile
-        Projectile projectile = new Projectile(
-                shooter,              // BaseCharacterStats shooter
-                6,                    // double velocity
-                "Arrow.png"           // String image
-        );
+        Projectile projectile = new Projectile(150,150,shooter, 6, "Arrow.png");
+
 
 
         // Add to the active projectiles list

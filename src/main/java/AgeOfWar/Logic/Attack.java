@@ -38,8 +38,6 @@ public class Attack {//
                 int distance = Math.abs(attacker.getX() - target.getX());
                 if (distance <= archer.getRange() * 3) { // 3x normal range
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
-                    Projectile projectile = new Projectile(attacker, 5.0, "arrow.png");
-                    mainLogic.getProjectiles().add(projectile);
                 }
             }
 
