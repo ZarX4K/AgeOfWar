@@ -3,7 +3,7 @@ package AgeOfWar.Characters;
 import javax.swing.*;
 import java.awt.*;
 
-public class Castle {
+public class Castle {//
     private int x, y, width, height, health;
     private boolean defeated;
     private static final Color HEALTH_BAR_BACKGROUND_COLOR = Color.RED;

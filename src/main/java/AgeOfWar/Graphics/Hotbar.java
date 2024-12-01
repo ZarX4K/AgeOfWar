@@ -4,7 +4,7 @@ import AgeOfWar.Logic.MainLogic;
 
 import java.awt.*;
 
-public class Hotbar {
+public class Hotbar {//
     private int x, y, width, height;
     private String side; // "player" or "enemy"
 

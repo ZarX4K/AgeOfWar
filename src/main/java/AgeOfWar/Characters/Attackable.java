@@ -1,5 +1,5 @@
 package AgeOfWar.Characters;
 
-public interface Attackable {
+public interface Attackable {//
     void takeDamage(int damage);
 }

@@ -5,7 +5,7 @@ import AgeOfWar.Logic.MainLogic;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameGraphics extends JFrame {
+public class GameGraphics extends JFrame {//
     private MainLogic mainLogic;
 
     public GameGraphics() {

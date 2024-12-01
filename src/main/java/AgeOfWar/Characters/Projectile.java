@@ -3,7 +3,7 @@ package AgeOfWar.Characters;
 import java.awt.*;
 import java.awt.image.ImageObserver;
 
-public class Projectile {
+public class Projectile {//
     private double x, y; // Position
     private double velocityX, velocityY; // Direction and speed
     private double damage; // Damage dealt to enemy

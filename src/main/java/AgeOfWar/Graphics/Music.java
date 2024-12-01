@@ -4,7 +4,7 @@ import javax.sound.sampled.*;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Music implements LineListener {
+public class Music implements LineListener {//
     private Clip musicClip;
     private boolean isPlaybackCompleted;
 

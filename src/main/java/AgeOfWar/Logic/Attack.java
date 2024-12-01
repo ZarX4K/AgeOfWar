@@ -4,7 +4,7 @@ import AgeOfWar.Characters.*;
 import java.util.List;
 import java.util.Random;
 
-public class Attack {
+public class Attack {//
     private static final long ATTACK_INTERVAL = 500; // Milliseconds between attacks
     private static final Random RANDOM = new Random();
     private boolean healthBoostApplied = false;

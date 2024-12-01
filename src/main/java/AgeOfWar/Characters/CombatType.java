@@ -1,6 +1,6 @@
 package AgeOfWar.Characters;
 
-public interface CombatType {
+public interface CombatType {//
     void performCloseCombatAttack(BaseCharacterStats target);
     void performRangedAttack(BaseCharacterStats target);
 }

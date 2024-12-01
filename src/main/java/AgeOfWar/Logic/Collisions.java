@@ -5,7 +5,7 @@ import AgeOfWar.Characters.Castle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Collisions {
+public class Collisions {//
     private final Attack attack;
     private final Hitboxes hitboxes;
     private final Moving moving;

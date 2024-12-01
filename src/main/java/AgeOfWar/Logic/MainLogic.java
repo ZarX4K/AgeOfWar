@@ -44,7 +44,7 @@ public class MainLogic implements Runnable {
 
 
 
-    // Game components
+    // Game components/
     private Music music;
     private GameGraphics gameGraphics;
     private Moving moving;
@@ -53,7 +53,7 @@ public class MainLogic implements Runnable {
     private Attack attack;
     private BackGroundScreens backGroundScreens;
     private JPanel gamePanel;
-    private Thread gameThread;
+    private Thread gameThread; //
 
     // Key input
     private KeyReader keyReader;

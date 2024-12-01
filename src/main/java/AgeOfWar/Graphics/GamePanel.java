@@ -6,7 +6,7 @@ import AgeOfWar.Logic.GameState;
 import javax.swing.*;
 import java.awt.*;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel {//
     private MainLogic mainLogic;
     private Hotbar playerHotbar;
     private Hotbar enemyHotbar;

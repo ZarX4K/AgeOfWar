@@ -1,6 +1,6 @@
 package AgeOfWar.Logic;
 
-public enum GameState {
+public enum GameState {//
     INTRO(1),       // Game is in the intro screen
     IN_GAME(2),     // Game is running
     GAME_OVER(3),   // Player lost

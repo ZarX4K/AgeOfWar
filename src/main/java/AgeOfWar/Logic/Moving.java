@@ -3,7 +3,7 @@ package AgeOfWar.Logic;
 import AgeOfWar.Characters.BaseCharacterStats;
 import java.util.List;
 
-public class Moving {
+public class Moving {//
     private static final int MIN_DISTANCE_BETWEEN_CHARACTERS = 150; // Adjust based on character size and desired gap
 
     public void moveCharacter(BaseCharacterStats character, List<? extends BaseCharacterStats> allCharacters) {

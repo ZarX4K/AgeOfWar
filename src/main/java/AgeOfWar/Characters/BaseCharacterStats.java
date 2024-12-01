@@ -5,7 +5,7 @@ import AgeOfWar.Graphics.Drawable;
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class BaseCharacterStats implements Attackable, Drawable {
+public abstract class BaseCharacterStats implements Attackable, Drawable {//
     public int x;
     public int y;
     protected int width;

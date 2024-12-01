@@ -3,7 +3,7 @@ package AgeOfWar.Graphics;
 import javax.swing.*;
 import java.awt.*;
 
-public class BackGroundScreens extends JPanel {
+public class BackGroundScreens extends JPanel {//
     private ImageIcon introImageIcon;
     private Image backgroundImage;
     private Image endScreenA;

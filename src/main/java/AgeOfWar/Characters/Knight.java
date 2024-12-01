@@ -2,7 +2,7 @@ package AgeOfWar.Characters;
 
 import java.util.Random;
 
-public class Knight extends BaseCharacterStats {
+public class Knight extends BaseCharacterStats {//
     public int critical;
     private static final double CRITICAL_CHANCE = 0.1; // 10% chance
 
