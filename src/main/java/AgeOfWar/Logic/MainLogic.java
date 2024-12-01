@@ -118,12 +118,9 @@ public class MainLogic implements Runnable {
     }
     // Method to spawn a projectile
     public void spawnProjectile(BaseCharacterStats shooter) {
-        // Ensure the shooter is valid
-        // Create a new projectile
-        Projectile projectile = new Projectile(150,150,shooter.getX(),shooter.getY(),shooter, 6, "Arrow.png");
-
-        // Add to the active projectiles list
-        this.getProjectiles().add(projectile); // Add projectile to the list
+        // Create the projectile based on the shooter's position and direction
+        Projectile arrow = new Projectile(80, 80, shooter.getX(), shooter.getY(), shooter, 5.0, "Arrow.png");
+        projectiles.add(arrow);  // Add the projectile to a list of projectiles in the game
     }
 
     // Update logic for projectiles

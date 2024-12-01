@@ -39,13 +39,13 @@ public class Attack {//
                 Archer archer = (Archer) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
                 // Check if target is within 3x the normal range
-                if (distance <= archer.getAttackRange() * 3) {
+                if (distance <= archer.getAttackRange() * 3) {  // use getRange() method
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
-                    mainLogic.spawnProjectile(attacker); // Spawns the projectile (arrow)
+                    mainLogic.spawnProjectile(attacker);  // This line should spawn the projectile
                 }
             }
 
-            updateLastAttackTime(attacker, currentTime);
+                updateLastAttackTime(attacker, currentTime);
             applyHealthBoostIfNeeded(attacker, target);
             handleDefeat(attacker, team1, mainLogic);
             handleDefeat(target, team2, mainLogic);
