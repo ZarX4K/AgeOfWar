@@ -21,8 +21,8 @@ public class Projectile {
         this.active = true;
 
         // Spawn position slightly ahead of the shooter
-        this.x = shooter.getX() + (!shooter.isEnemy() ? shooter.getWidth() : -20);
-        this.y = shooter.getY() + shooter.getHeight() / 2;
+        this.x = shooter.getX() + (!shooter.isEnemy() ? shooter.getWidth() : +120);
+        this.y = shooter.getY() + shooter.getHeight() -180;
 
         // Velocity based on the shooter's facing direction
         this.velocityX = (shooter.isEnemy() ? 1 : -1) * velocityMultiplier;
