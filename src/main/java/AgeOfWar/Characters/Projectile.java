@@ -6,14 +6,13 @@ import javax.swing.ImageIcon;
 
 public class Projectile {
     private int x, y; // Position of the projectile
-    private double velocityX, velocityY; // Movement direction and speed
     private int damage; // Damage dealt upon collision
     private BaseCharacterStats shooter; // The entity that fired the projectile
     private Image image; // Visual representation of the projectile
     private boolean active; // Whether the projectile is active in the game
     private int width, height; // Width and height for scaling
 
-    public Projectile(int width, int height,int x ,int y, BaseCharacterStats shooter, double velocityMultiplier, String imageName) {
+    public Projectile(int width, int height, int x, int y, BaseCharacterStats shooter, String imageName) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -23,12 +22,8 @@ public class Projectile {
         this.active = true;
 
         // Spawn position slightly ahead of the shooter
-        this.x = shooter.getX() + (!shooter.isEnemy() ? shooter.getWidth() : +120);
-        this.y = shooter.getY() + shooter.getHeight() -150;
-
-        // Velocity based on the shooter's facing direction
-        this.velocityX = (shooter.isEnemy() ? 1 : -1) * velocityMultiplier;
-        this.velocityY = 0;
+        this.x = shooter.getX() + (!shooter.isEnemy() ? shooter.getWidth() : 120);
+        this.y = shooter.getY() + shooter.getHeight() - 150;
 
         // Load projectile image and assign to the 'image' field
         ImageIcon projectileImage = new ImageIcon(getClass().getClassLoader().getResource(imageName));
@@ -38,9 +33,8 @@ public class Projectile {
     public void update() {
         if (!active) return;
 
-        // Update projectile position
-        x += velocityX;
-        y += velocityY;
+        // Move the projectile horizontally based on the shooter's direction
+        x += shooter.isEnemy() ? -3 : 3;
 
         // Deactivate if out of bounds
         if (x < 0 || x > 1600 || y < 0 || y > 900) {
@@ -51,13 +45,13 @@ public class Projectile {
     public void draw(Graphics g, ImageObserver observer) {
         if (active) {
             // Scale the image by the specified width and height
-            g.drawImage(image, x,  y, width, height, observer);
+            g.drawImage(image, x, y, width, height, observer);
         }
     }
 
     public boolean checkCollision(Rectangle targetBounds) {
         if (!active) return false;
-        Rectangle projectileBounds = new Rectangle( x, y, width, height);
+        Rectangle projectileBounds = new Rectangle(x, y, width, height);
         return projectileBounds.intersects(targetBounds);
     }
 
@@ -87,14 +81,6 @@ public class Projectile {
 
     public int getX() {
         return x;
-    }
-
-    public double getVelocityX() {
-        return velocityX;
-    }
-
-    public double getVelocityY() {
-        return velocityY;
     }
 
     public int getWidth() {

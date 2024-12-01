@@ -23,10 +23,14 @@ public class Attack {
                 CombatType combatant = (CombatType) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
 
-                if (distance <= 50) { // Example threshold for close combat
+                if (distance <= 50) { // Close combat range (e.g., 50 units)
+                    // If within close combat range, perform close combat
                     combatant.performCloseCombatAttack(target);
+                    combatant.stopRangedAttack(); // Stop ranged attack if in close range
                 } else {
+                    // If out of close combat range, perform ranged attack
                     combatant.performRangedAttack(target);
+                    combatant.stopCloseCombat(); // Ensure close combat does not happen while ranged
                 }
             } else {
                 int damageDealt = calculateDamage(attacker);
@@ -35,11 +39,11 @@ public class Attack {
             }
 
             // Archer specific logic: Spawn arrows if enemies are within range
-            if (attacker instanceof Archer && combatant.performRangedAttack(target);) {
+            if (attacker instanceof Archer) {
                 Archer archer = (Archer) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
 
-                // Check if target is within 3x the normal range
+                // Check if target is within 3x the normal range for archers
                 if (distance <= archer.getAttackRange() * 3) {
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
                     mainLogic.spawnProjectile(attacker);  // Spawns the projectile (arrow)

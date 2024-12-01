@@ -119,7 +119,7 @@ public class MainLogic implements Runnable {
     // Method to spawn a projectile
     public void spawnProjectile(BaseCharacterStats shooter) {
         // Create the projectile based on the shooter's position and direction
-        Projectile arrow = new Projectile(80, 80, shooter.getX(), shooter.getY(), shooter, 5.0, "Arrow.png");
+        Projectile arrow = new Projectile(80, 80, shooter.getX(), shooter.getY(), shooter, "Arrow.png");
         projectiles.add(arrow);  // Add the projectile to a list of projectiles in the game
     }
 
