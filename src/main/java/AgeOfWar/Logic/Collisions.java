@@ -2,7 +2,11 @@ package AgeOfWar.Logic;
 
 import AgeOfWar.Characters.BaseCharacterStats;
 import AgeOfWar.Characters.Castle;
+import AgeOfWar.Characters.Projectile;
+
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Collisions {//
@@ -78,6 +82,21 @@ public class Collisions {//
             }
         }
         return nearestOpponent;
+    }
+    private void checkProjectileCollisions(List<Projectile> projectiles, List<? extends BaseCharacterStats> targets) {
+        Iterator<Projectile> iterator = projectiles.iterator();
+        while (iterator.hasNext()) {
+            Projectile projectile = iterator.next();
+            for (BaseCharacterStats target : targets) {
+                Rectangle targetBounds = new Rectangle(target.getX(), target.getY(), target.getWidth(), target.getHeight());
+                if (projectile.checkCollision(targetBounds)) {
+                    target.takeDamage((int) projectile.getDamage()); // Apply damage
+                    projectile.deactivate(); // Deactivate the projectile
+                    iterator.remove(); // Remove projectile after collision
+                    break; // No need to check this projectile further
+                }
+            }
+        }
     }
 
 

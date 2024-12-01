@@ -33,6 +33,15 @@ public class Attack {//
                 DAMAGESTATES damageState = determineDamageState(attacker, target, damageDealt);
                 applyDamage(target, damageDealt, damageState);
             }
+            if (attacker instanceof Archer) {
+                Archer archer = (Archer) attacker;
+                int distance = Math.abs(attacker.getX() - target.getX());
+                if (distance <= archer.getRange() * 3) { // 3x normal range
+                    System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
+                    Projectile projectile = new Projectile(attacker, 5.0, "arrow.png");
+                    mainLogic.getProjectiles().add(projectile);
+                }
+            }
 
             updateLastAttackTime(attacker, currentTime);
             applyHealthBoostIfNeeded(attacker, target);

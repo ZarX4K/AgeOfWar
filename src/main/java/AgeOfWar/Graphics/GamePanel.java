@@ -1,15 +1,16 @@
 package AgeOfWar.Graphics;
 
+import AgeOfWar.Characters.Projectile;
 import AgeOfWar.Logic.MainLogic;
 import AgeOfWar.Logic.GameState;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GamePanel extends JPanel {//
-    private MainLogic mainLogic;
-    private Hotbar playerHotbar;
-    private Hotbar enemyHotbar;
+public class GamePanel extends JPanel {
+    private final MainLogic mainLogic;
+    private final Hotbar playerHotbar;
+    private final Hotbar enemyHotbar;
 
     public GamePanel(MainLogic mainLogic) {
         this.mainLogic = mainLogic;
@@ -23,7 +24,7 @@ public class GamePanel extends JPanel {//
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Use the GameState enum to check the current game state
+        // Check current game state
         GameState currentState = mainLogic.getGameState();
 
         switch (currentState) {
@@ -45,22 +46,18 @@ public class GamePanel extends JPanel {//
     }
 
     private void drawIntroScreen(Graphics g) {
-        // Draw intro screen background
         g.drawImage(mainLogic.getBackGroundScreens().getIntroImageIcon().getImage(), 0, 0, null);
     }
 
     private void drawScreenA(Graphics g) {
-        // Draw end screen A background
         g.drawImage(mainLogic.getBackGroundScreens().getEndScreenA(), 0, 0, null);
     }
 
     private void drawScreenB(Graphics g) {
-        // Draw end screen B background
         g.drawImage(mainLogic.getBackGroundScreens().getEndScreenB(), 0, 0, null);
     }
 
     private void drawGameScreen(Graphics g) {
-        // Draw game background
         g.drawImage(mainLogic.getBackGroundScreens().getBackgroundImage(), 0, 0, null);
 
         // Draw hotbars
@@ -71,26 +68,30 @@ public class GamePanel extends JPanel {//
         mainLogic.getPlayerCastle().draw(g);
         mainLogic.getEnemyCastle().draw(g);
 
-        // Draw characters (Knights, Archers, Tanks)
+        // Draw characters
         drawCharacters(g);
 
-        // Display gold of each player
+        // Draw projectiles
+        drawProjectiles(g);
+
+        // Display gold
         displayGold(g);
     }
 
     private void drawCharacters(Graphics g) {
-        // Draw player and enemy knights
         mainLogic.getKnights().forEach(knight -> knight.draw(g));
         mainLogic.getEnemyKnights().forEach(knight -> knight.draw(g));
-
-        // Draw player and enemy archers
         mainLogic.getArchers().forEach(archer -> archer.draw(g));
         mainLogic.getEnemyArchers().forEach(archer -> archer.draw(g));
-
-        // Draw player and enemy tanks
         mainLogic.getTanks().forEach(tank -> tank.draw(g));
         mainLogic.getEnemyTanks().forEach(tank -> tank.draw(g));
+    }
 
+    private void drawProjectiles(Graphics g) {
+        // Retrieve projectiles from MainLogic and draw them
+        for (Projectile projectile : mainLogic.getProjectiles()) {
+            projectile.draw(g, this);
+        }
     }
 
     private void displayGold(Graphics g) {

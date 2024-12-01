@@ -3,8 +3,10 @@ package AgeOfWar.Logic;
 import AgeOfWar.Characters.*;
 import AgeOfWar.Graphics.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainLogic implements Runnable {
@@ -67,6 +69,7 @@ public class MainLogic implements Runnable {
     private final List<Tank> enemyTanks = new ArrayList<>();
     private Castle playerCastle;
     private Castle enemyCastle;
+    private final List<Projectile> projectiles = new ArrayList<>(); // Store active projectiles
 
     // Initialization
     public void initialize() {
@@ -112,6 +115,34 @@ public class MainLogic implements Runnable {
 
     public void setGamePanel(JPanel gamePanel) {
         this.gamePanel = gamePanel;
+    }
+    // Method to spawn a projectile
+    public void spawnProjectile(BaseCharacterStats shooter) {
+        // Ensure the shooter is valid
+        if (shooter == null) return;
+
+        // Create a new projectile
+        Projectile projectile = new Projectile(
+                shooter,              // BaseCharacterStats shooter
+                6,                    // double velocity
+                "Arrow.png"           // String image
+        );
+
+
+        // Add to the active projectiles list
+        projectiles.add(projectile);
+    }
+
+    // Update logic for projectiles
+    private void updateProjectiles() {
+        Iterator<Projectile> iterator = projectiles.iterator();
+        while (iterator.hasNext()) {
+            Projectile projectile = iterator.next();
+            projectile.update();
+            if (!projectile.isActive()) {
+                iterator.remove(); // Remove inactive projectiles
+            }
+        }
     }
 
     // Spawning methods
@@ -249,6 +280,8 @@ public class MainLogic implements Runnable {
         handleSpawning();
         handleCollisions();
 
+        updateProjectiles(); // Update projectiles here
+
         removeDefeatedCharacters(knights);
         removeDefeatedCharacters(archers);
         removeDefeatedCharacters(tanks);
@@ -275,6 +308,10 @@ public class MainLogic implements Runnable {
 
         gamePanel.repaint();
     }
+
+
+
+
 
     private void handleSpawning() {
         if (keyReader.knightSpawn) {
@@ -418,7 +455,17 @@ public class MainLogic implements Runnable {
             if (e.getKeyCode() == KeyEvent.VK_ENTER && (mainLogic.getGameState() == GameState.GAME_OVER || mainLogic.getGameState() == GameState.ENEMY_WIN)) {
                 mainLogic.resetGame();
             }
+            if (e.getKeyCode() == KeyEvent.VK_G) {
+                // Spawn an arrow in the middle of the screen when G is pressed
+                int screenWidth = gamePanel.getWidth(); // Get screen width
+                int screenHeight = gamePanel.getHeight(); // Get screen height
 
+                // Create a base character (use any character to spawn the projectile)
+                // You might want to pass the correct shooter object for the projectile
+                Archer dummyShooter = new Archer(800, 500, 150, 150, "Archer.png", "Archer.png", "Archer.png", 100, 15, 50, 1, true, true, false, false, 20, 10);
+                archers.add(dummyShooter);
+                mainLogic.spawnProjectile(dummyShooter); // This spawns the projectile (arrow)
+            }
         }
 
         @Override
@@ -430,6 +477,10 @@ public class MainLogic implements Runnable {
             if (e.getKeyCode() == KeyEvent.VK_K) ENEMYarcherSpawn = false;
             if (e.getKeyCode() == KeyEvent.VK_J) ENEMYtankSpawn = false;
         }
+    }
+    // Getter for projectiles
+    public List<Projectile> getProjectiles() {
+        return projectiles;
     }
 
 
