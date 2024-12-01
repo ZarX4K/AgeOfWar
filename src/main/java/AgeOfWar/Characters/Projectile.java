@@ -5,15 +5,17 @@ import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 
 public class Projectile {
-    private double x, y; // Position of the projectile
+    private int x, y; // Position of the projectile
     private double velocityX, velocityY; // Movement direction and speed
-    private double damage; // Damage dealt upon collision
+    private int damage; // Damage dealt upon collision
     private BaseCharacterStats shooter; // The entity that fired the projectile
     private Image image; // Visual representation of the projectile
     private boolean active; // Whether the projectile is active in the game
     private int width, height; // Width and height for scaling
 
-    public Projectile(int width, int height, BaseCharacterStats shooter, double velocityMultiplier, String imageName) {
+    public Projectile(int width, int height,int x ,int y, BaseCharacterStats shooter, double velocityMultiplier, String imageName) {
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.shooter = shooter;
@@ -49,17 +51,17 @@ public class Projectile {
     public void draw(Graphics g, ImageObserver observer) {
         if (active) {
             // Scale the image by the specified width and height
-            g.drawImage(image, (int) x, (int) y, width, height, observer);
+            g.drawImage(image, x,  y, width, height, observer);
         }
     }
 
     public boolean checkCollision(Rectangle targetBounds) {
         if (!active) return false;
-        Rectangle projectileBounds = new Rectangle((int) x, (int) y, width, height);
+        Rectangle projectileBounds = new Rectangle( x, y, width, height);
         return projectileBounds.intersects(targetBounds);
     }
 
-    public double getDamage() {
+    public int getDamage() {
         return damage;
     }
 
@@ -73,5 +75,33 @@ public class Projectile {
 
     public void deactivate() {
         this.active = false;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

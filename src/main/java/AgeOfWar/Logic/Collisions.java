@@ -42,7 +42,7 @@ public class Collisions {//
 
     private void checkCastleCollisions(List<? extends BaseCharacterStats> characters, List<BaseCharacterStats> defeatedCharacters, Castle castle, List<? extends BaseCharacterStats> opponentCharacters) {
         for (BaseCharacterStats character : new ArrayList<>(characters)) {
-            if (hitboxes.collides(character, castle)) {
+            if (hitboxes.collidesCastle(character, castle)) {
                 // Directly call the attack method for attacking the castle
                 attack.performAttackOnCastle(character, castle);
                 if (!character.isAlive()) {
@@ -55,7 +55,7 @@ public class Collisions {//
     private void checkCharacterCollisions(List<? extends BaseCharacterStats> characters, List<? extends BaseCharacterStats> opponentCharacters, List<BaseCharacterStats> defeatedCharacters, List<BaseCharacterStats> opponentDefeatedCharacters) {
         for (BaseCharacterStats character : new ArrayList<>(characters)) {
             BaseCharacterStats nearestOpponent = findNearestOpponent(character, opponentCharacters);
-            if (nearestOpponent != null && hitboxes.collides(character, nearestOpponent)) {
+            if (nearestOpponent != null && hitboxes.collidesCharacters(character, nearestOpponent)) {
                 moving.stopCharacter(character);
                 moving.stopCharacter(nearestOpponent);
                 attack.performAttack(character, nearestOpponent, characters, opponentCharacters, mainLogic);
@@ -83,6 +83,7 @@ public class Collisions {//
         }
         return nearestOpponent;
     }
+
     private void checkProjectileCollisions(List<Projectile> projectiles, List<? extends BaseCharacterStats> targets) {
         Iterator<Projectile> iterator = projectiles.iterator();
         while (iterator.hasNext()) {
@@ -98,6 +99,7 @@ public class Collisions {//
             }
         }
     }
+
 
 
 }

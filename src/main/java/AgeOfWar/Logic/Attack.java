@@ -33,11 +33,15 @@ public class Attack {//
                 DAMAGESTATES damageState = determineDamageState(attacker, target, damageDealt);
                 applyDamage(target, damageDealt, damageState);
             }
+
+            // Archer specific logic
             if (attacker instanceof Archer) {
                 Archer archer = (Archer) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
-                if (distance <= archer.getRange() * 3) { // 3x normal range
+                // Check if target is within 3x the normal range
+                if (distance <= archer.getRange() * 3) {
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
+                    mainLogic.spawnProjectile(attacker); // Spawns the projectile (arrow)
                 }
             }
 
@@ -47,6 +51,7 @@ public class Attack {//
             handleDefeat(target, team2, mainLogic);
         }
     }
+
 
     // Check if the attacker can attack
     private boolean canAttack(BaseCharacterStats attacker, BaseCharacterStats target, long currentTime) {

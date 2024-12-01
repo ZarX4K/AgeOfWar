@@ -119,15 +119,11 @@ public class MainLogic implements Runnable {
     // Method to spawn a projectile
     public void spawnProjectile(BaseCharacterStats shooter) {
         // Ensure the shooter is valid
-        if (shooter == null) return;
-
         // Create a new projectile
-        Projectile projectile = new Projectile(150,150,shooter, 6, "Arrow.png");
-
-
+        Projectile projectile = new Projectile(150,150,shooter.getX(),shooter.getY(),shooter, 6, "Arrow.png");
 
         // Add to the active projectiles list
-        projectiles.add(projectile);
+        this.getProjectiles().add(projectile); // Add projectile to the list
     }
 
     // Update logic for projectiles
@@ -279,6 +275,8 @@ public class MainLogic implements Runnable {
 
         updateProjectiles(); // Update projectiles here
 
+
+
         removeDefeatedCharacters(knights);
         removeDefeatedCharacters(archers);
         removeDefeatedCharacters(tanks);
@@ -349,8 +347,30 @@ public class MainLogic implements Runnable {
         enemyCharacters.addAll(enemyArchers);
         enemyCharacters.addAll(enemyTanks);
 
+        // Check projectile collisions
+        for (Projectile projectile : projectiles) {
+            for (BaseCharacterStats character : enemyCharacters) {
+                if (hitboxes.collidesArrowCharacter(projectile, character)) {
+                    // Handle the projectile collision with the character (e.g., damage)
+                    // You can call a method to apply damage to the character or remove the projectile
+                    projectile.setActive(false); // Example: Deactivate projectile after hit
+                    character.takeDamage(projectile.getDamage()); // Example: Apply damage
+                }
+            }
+
+            // Check projectile collision with castle
+            if (hitboxes.collidesArrowCastle(projectile, enemyCastle)) {
+                // Handle projectile collision with castle
+                projectile.setActive(false); // Deactivate projectile after hitting castle
+                enemyCastle.takeDamage(projectile.getDamage()); // Example: Apply damage to the castle
+            }
+        }
+
+        // Check other character collisions
         collisions.checkCollisions(playerCharacters, enemyCharacters);
     }
+
+
 
     private void removeDefeatedCharacters(List<? extends BaseCharacterStats> charactersList) {
         charactersList.removeIf(character -> {
@@ -459,7 +479,7 @@ public class MainLogic implements Runnable {
 
                 // Create a base character (use any character to spawn the projectile)
                 // You might want to pass the correct shooter object for the projectile
-                Archer dummyShooter = new Archer(800, 500, 150, 150, "Archer.png", "Archer.png", "Archer.png", 100, 15, 50, 1, true, true, false, false, 20, 10);
+                Archer dummyShooter = new Archer(800, 800, 150, 150, "Archer.png", "Archer.png", "Archer.png", 100, 15, 50, 1, true, true, false, false, 20, 10);
                 archers.add(dummyShooter);
                 mainLogic.spawnProjectile(dummyShooter); // This spawns the projectile (arrow)
             }
