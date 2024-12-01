@@ -4,7 +4,7 @@ import AgeOfWar.Characters.*;
 import java.util.List;
 import java.util.Random;
 
-public class Attack {//
+public class Attack {
     private static final long ATTACK_INTERVAL = 500; // Milliseconds between attacks
     private static final Random RANDOM = new Random();
     private boolean healthBoostApplied = false;
@@ -34,24 +34,24 @@ public class Attack {//
                 applyDamage(target, damageDealt, damageState);
             }
 
-            // Archer specific logic
-            if (attacker instanceof Archer) {
+            // Archer specific logic: Spawn arrows if enemies are within range
+            if (attacker instanceof Archer && combatant.performRangedAttack(target);) {
                 Archer archer = (Archer) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
+
                 // Check if target is within 3x the normal range
-                if (distance <= archer.getAttackRange() * 3) {  // use getRange() method
+                if (distance <= archer.getAttackRange() * 3) {
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
-                    mainLogic.spawnProjectile(attacker);  // This line should spawn the projectile
+                    mainLogic.spawnProjectile(attacker);  // Spawns the projectile (arrow)
                 }
             }
 
-                updateLastAttackTime(attacker, currentTime);
+            updateLastAttackTime(attacker, currentTime);
             applyHealthBoostIfNeeded(attacker, target);
             handleDefeat(attacker, team1, mainLogic);
             handleDefeat(target, team2, mainLogic);
         }
     }
-
 
     // Check if the attacker can attack
     private boolean canAttack(BaseCharacterStats attacker, BaseCharacterStats target, long currentTime) {
