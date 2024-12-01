@@ -8,7 +8,7 @@ public class Archer extends Knight {
         this.range = range;
     }
 
-    public int getRange() {
+    public int getAttackRange() {
         return range;
     }
 }

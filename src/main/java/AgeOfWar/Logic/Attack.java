@@ -39,7 +39,7 @@ public class Attack {//
                 Archer archer = (Archer) attacker;
                 int distance = Math.abs(attacker.getX() - target.getX());
                 // Check if target is within 3x the normal range
-                if (distance <= archer.getRange() * 3) {
+                if (distance <= archer.getAttackRange() * 3) {
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
                     mainLogic.spawnProjectile(attacker); // Spawns the projectile (arrow)
                 }

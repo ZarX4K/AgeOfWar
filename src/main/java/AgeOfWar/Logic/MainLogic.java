@@ -137,6 +137,24 @@ public class MainLogic implements Runnable {
             }
         }
     }
+    // In the update method for each archer
+    private void updateArchers() {
+        for (Archer archer : archers) {
+            for (BaseCharacterStats enemy : enemyArchers) {
+                if (isEnemyInRange(archer, enemy)) {
+                    // Trigger attack
+                    spawnProjectile(archer); // Spawns the projectile from the archer
+                }
+            }
+        }
+    }
+
+    // Helper method to check if an enemy is in range
+    private boolean isEnemyInRange(Archer archer, BaseCharacterStats enemy) {
+        double distance = Math.sqrt(Math.pow(archer.getX() - enemy.getX(), 2) + Math.pow(archer.getY() - enemy.getY(), 2));
+        return distance <= archer.getAttackRange(); // Check if the enemy is within the attack range of the archer
+    }
+
 
     // Spawning methods
     private void spawnKnight() {
