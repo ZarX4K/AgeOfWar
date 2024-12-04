@@ -6,6 +6,7 @@ import AgeOfWar.Logic.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Iterator;
 
 public class GamePanel extends JPanel {
     private final MainLogic mainLogic;
@@ -88,11 +89,16 @@ public class GamePanel extends JPanel {
     }
 
     private void drawProjectiles(Graphics g) {
-        // Retrieve projectiles from MainLogic and draw them
-        for (Projectile projectile : mainLogic.getProjectiles()) {
+        // Use an iterator to avoid ConcurrentModificationException
+        Iterator<Projectile> projectileIterator = mainLogic.getProjectiles().iterator();
+
+        while (projectileIterator.hasNext()) {
+            Projectile projectile = projectileIterator.next();
             projectile.draw(g, this);
+
         }
     }
+
 
     private void displayGold(Graphics g) {
         g.setColor(Color.YELLOW);

@@ -2,6 +2,7 @@ package AgeOfWar.Logic;
 
 import AgeOfWar.Characters.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Attack {
@@ -15,7 +16,7 @@ public class Attack {
 
     // Perform an attack between characters
     public void performAttack(BaseCharacterStats attacker, BaseCharacterStats target,
-                              List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic) {
+                              List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic, Map map) {
         long currentTime = System.currentTimeMillis();
 
         if (canAttack(attacker, target, currentTime)) {
@@ -27,11 +28,12 @@ public class Attack {
                 if (distance <= combatant.getCloseCombatRange()) {
                     combatant.performCloseCombatAttack(target);
                     combatant.stopRangedAttack(); // Stop ranged attack if in close range
-                } else if (distance <= combatant.getRangedAttackRange()) {
-                    // If within ranged attack range, perform ranged attack
+                } else if (distance <= combatant.getRangedAttackRange() && canSeeEnemy(attacker, target, map)) {
+                    // If within ranged attack range and line of sight is clear, perform ranged attack
                     combatant.performRangedAttack(target);
                     combatant.stopCloseCombat(); // Ensure close combat does not happen while ranged
                 }
+
             } else {
                 // Generic attack logic for other character types
                 int damageDealt = calculateDamage(attacker);
@@ -39,15 +41,33 @@ public class Attack {
                 applyDamage(target, damageDealt, damageState);
             }
 
-            // Archer specific logic: Spawn arrows if enemies are within range
+            // Archer specific logic: Spawn arrows if enemies are within range and in line of sight
             if (attacker instanceof Archer) {
                 Archer archer = (Archer) attacker;
+                int range = archer.getRangedAttackRange();  // Get range from MainLogic
                 int distance = Math.abs(attacker.getX() - target.getX());
 
-                // Check if target is within range for archers
-                if (distance <= archer.getAttackRange()) {
+                // Check if target is within range for archers and if line of sight is clear
+                if (distance <= range && canSeeEnemy(attacker, target, map)) {
                     System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
                     mainLogic.spawnProjectile(attacker);  // Spawns the projectile (arrow)
+                } else {
+                    System.out.println(attacker.getClass().getSimpleName() + " cannot shoot, target too far away or no line of sight.");
+                }
+            }
+
+            // Tank specific logic: Check if the target is within range and can be attacked
+            if (attacker instanceof Tank) {
+                Tank tank = (Tank) attacker;
+                int range = tank.getRangedAttackRange();  // Get range from MainLogic
+                int distance = Math.abs(attacker.getX() - target.getX());
+
+                // Check if target is within range for tanks and if line of sight is clear
+                if (distance <= range && canSeeEnemy(attacker, target, map)) {
+                    System.out.println(attacker.getClass().getSimpleName() + " attacks with tank range!");
+                    mainLogic.spawnProjectile(attacker);  // Spawns the tank's attack
+                } else {
+                    System.out.println(attacker.getClass().getSimpleName() + " cannot shoot, target too far away or no line of sight.");
                 }
             }
 
@@ -58,11 +78,75 @@ public class Attack {
         }
     }
 
+
     // Check if the attacker can attack
     private boolean canAttack(BaseCharacterStats attacker, BaseCharacterStats target, long currentTime) {
         return attacker.isAlive() && target.isAlive() &&
                 currentTime - attacker.getLastAttackTime() >= ATTACK_INTERVAL;
     }
+
+    // Example approach without using GameMap or isClearPath
+    public boolean canSeeEnemy(BaseCharacterStats attacker, BaseCharacterStats target, Map map) {
+        int attackerX = attacker.getX();
+        int attackerY = attacker.getY();
+        int targetX = target.getX();
+        int targetY = target.getY();
+
+        // Check if there's an obstacle in the line between attacker and target
+        for (int x = Math.min(attackerX, targetX); x <= Math.max(attackerX, targetX); x++) {
+            for (int y = Math.min(attackerY, targetY); y <= Math.max(attackerY, targetY); y++) {
+                // Only block the shot if there is an obstacle and it is not a teammate
+                if (mapContainsObstacle(x, y, map)) {
+                    BaseCharacterStats obstacle = getCharacterAtPosition(x, y, map);
+                    if (obstacle != null && obstacle != attacker && obstacle != target && isTeammate(attacker, obstacle)) {
+                        return false;  // Block the shot if there's a teammate in the way
+                    }
+                }
+            }
+        }
+
+        return true;  // No obstacles found or it's just the target
+    }
+    public boolean isTeammate(BaseCharacterStats attacker, BaseCharacterStats obstacle) {
+        // Check if both are on the same team (you can implement this based on how your teams are structured)
+        return (attacker instanceof Archer && obstacle instanceof Archer) ||
+                (attacker instanceof Tank && obstacle instanceof Tank);  // Example for Archer and Tank
+    }
+    public BaseCharacterStats getCharacterAtPosition(int x, int y, Map map) {
+        // This should return the character at the specified coordinates, or null if none exists
+        return map.getCharacterAt(x, y);  // Modify as needed based on your map's implementation
+    }
+
+
+
+    // This is a simple placeholder; modify based on how your map stores obstacles
+    public boolean mapContainsObstacle(int x, int y, Map map) {
+        // Implement this based on your map structure
+        return false;  // Example, replace with actual logic
+    }
+
+    public class Map {
+        private BaseCharacterStats[][] grid;  // Example grid representing the map
+
+        // Constructor or initialization logic for the map
+        public Map(int width, int height) {
+            grid = new BaseCharacterStats[width][height];  // Initialize a 2D grid
+        }
+
+        // Method to set a character at a specific location
+        public void setCharacterAt(int x, int y, BaseCharacterStats character) {
+            grid[x][y] = character;
+        }
+
+        // Method to get a character at a specific location
+        public BaseCharacterStats getCharacterAt(int x, int y) {
+            if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length) {
+                return grid[x][y];  // Return the character at the grid position
+            }
+            return null;  // Return null if the position is out of bounds or no character is present
+        }
+    }
+
 
     // Calculate damage with random critical hit logic
     private int calculateDamage(BaseCharacterStats attacker) {
@@ -154,4 +238,3 @@ public class Attack {
         }
     }
 }
-

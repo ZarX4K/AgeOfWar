@@ -156,7 +156,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnArcher() {
-        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 3, true, false, false, false, 20, 150);
+        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 3, true, false, false, false, 20, 500);
         if (isSpawnAvailable(playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, archer.getPriceBuy())) {
             deductPlayerGold(archer.getPriceBuy());
             archers.add(archer);
@@ -167,7 +167,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnTank() {
-        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 3, true, false, false, false, 30, 150, 15);
+        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 3, true, false, false, false, 30, 500, 15);
         if (isSpawnAvailable(playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, tank.getPriceBuy())) {
             deductPlayerGold(tank.getPriceBuy());
             tanks.add(tank);
@@ -190,7 +190,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyArcher() {
-        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 3, true, true, false, false, 20, 150);
+        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 3, true, true, false, false, 20, 500);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, enemyArcher.getPriceBuy())) {
             enemyArchers.add(enemyArcher);
             deductEnemyGold(enemyArcher.getPriceBuy());
@@ -201,7 +201,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyTank() {
-        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 3, true, true, false, false, 30, 150, 15);
+        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 3, true, true, false, false, 30, 500, 15);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, enemyTank.getPriceBuy())) {
             enemyTanks.add(enemyTank);
             deductEnemyGold(enemyTank.getPriceBuy());

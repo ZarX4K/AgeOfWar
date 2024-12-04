@@ -352,23 +352,39 @@ public class MainLogic implements Runnable {
 
         // Check projectile collisions
         for (Projectile projectile : projectiles) {
-            for (BaseCharacterStats character : enemyCharacters) {
+            // Check if the projectile hits any player character
+            for (BaseCharacterStats character : playerCharacters) {
                 if (hitboxes.collidesArrowCharacter(projectile, character)) {
                     projectile.setActive(false);
-                    character.takeDamage(projectile.getDamage());
+                    character.takeDamage(projectile.getDamage());  // Deal damage to player character
                 }
             }
 
-            // Check projectile collision with castle
+            // Check if the projectile hits any enemy character
+            for (BaseCharacterStats character : enemyCharacters) {
+                if (hitboxes.collidesArrowCharacter(projectile, character)) {
+                    projectile.setActive(false);
+                    character.takeDamage(projectile.getDamage());  // Deal damage to enemy character
+                }
+            }
+
+            // Check projectile collision with player's castle (player projectiles should hit the enemy castle)
+            if (hitboxes.collidesArrowCastle(projectile, playerCastle)) {
+                projectile.setActive(false);
+                playerCastle.takeDamage(projectile.getDamage());  // Deal damage to player's castle
+            }
+
+            // Check projectile collision with enemy's castle (enemy projectiles should hit the player's castle)
             if (hitboxes.collidesArrowCastle(projectile, enemyCastle)) {
                 projectile.setActive(false);
-                enemyCastle.takeDamage(projectile.getDamage());
+                enemyCastle.takeDamage(projectile.getDamage());  // Deal damage to enemy's castle
             }
         }
 
         // Check other character collisions
         collisions.checkCollisions(playerCharacters, enemyCharacters);
     }
+
 
 
     private void removeDefeatedCharacters(List<? extends BaseCharacterStats> charactersList) {
