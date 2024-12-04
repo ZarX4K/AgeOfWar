@@ -278,7 +278,6 @@ public class MainLogic implements Runnable {
         handleSpawning();
         handleCollisions();
 
-        handleProjectileCollisions();  // Call the method that handles collisions
 
         updateProjectiles(); // Update projectiles here
 
@@ -309,30 +308,6 @@ public class MainLogic implements Runnable {
         }
 
         gamePanel.repaint();
-    }
-    public void handleProjectileCollisions() {
-        // Iterate over all projectiles
-        for (Projectile projectile : projectiles) {
-            // Check collision with enemy characters
-            for (BaseCharacterStats character : enemyCharacters) {
-                if (hitboxes.collidesArrowCharacter(projectile, character)) {
-                    projectile.setActive(false);  // Deactivate the projectile once it hits
-                    character.takeDamage(projectile.getDamage());  // Deal damage to the enemy character
-                }
-            }
-
-            // Check collision with the player's castle
-            if (hitboxes.collidesArrowCastle(projectile, playerCastle)) {
-                projectile.setActive(false);
-                playerCastle.takeDamage(projectile.getDamage());  // Deal damage to the player's castle
-            }
-
-            // Check collision with the enemy's castle
-            if (hitboxes.collidesArrowCastle(projectile, enemyCastle)) {
-                projectile.setActive(false);
-                enemyCastle.takeDamage(projectile.getDamage());  // Deal damage to the enemy's castle
-            }
-        }
     }
 
 
