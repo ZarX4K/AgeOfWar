@@ -1,15 +1,10 @@
 package AgeOfWar.Logic;
 
-import AgeOfWar.Characters.BaseCharacterStats;
-import AgeOfWar.Characters.Castle;
-import AgeOfWar.Characters.Projectile;
-
-import java.awt.*;
+import AgeOfWar.Characters.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Collisions {//
+public class Collisions {
     private final Attack attack;
     private final Hitboxes hitboxes;
     private final Moving moving;
@@ -38,7 +33,6 @@ public class Collisions {//
         allies.removeAll(defeatedAllies);
         enemies.removeAll(defeatedEnemies);
     }
-
 
     private void checkCastleCollisions(List<? extends BaseCharacterStats> characters, List<BaseCharacterStats> defeatedCharacters, Castle castle, List<? extends BaseCharacterStats> opponentCharacters) {
         for (BaseCharacterStats character : new ArrayList<>(characters)) {
@@ -75,12 +69,33 @@ public class Collisions {//
         int nearestDistance = Integer.MAX_VALUE;
 
         for (BaseCharacterStats opponent : opponents) {
-            int distance = Math.abs(character.getX() - opponent.getX());
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
-                nearestOpponent = opponent;
+            if (character.getY() == opponent.getY()) {
+                int distance = Math.abs(character.getX() - opponent.getX());
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestOpponent = opponent;
+                }
             }
         }
+
+        // Ensure that the target is an enemy and check if the character is an Archer
+        if (character instanceof Archer && nearestOpponent != null) {
+            Archer archer = (Archer) character;
+            int distance = Math.abs(character.getX() - nearestOpponent.getX());
+            long currentTime = System.currentTimeMillis();
+
+            // Check if the archer can shoot: both ally and enemy archers are allowed to shoot
+            if (distance <= archer.getRangedAttackRange() && currentTime - archer.getLastShotTime() >= 800) {
+                // Perform attack only if the opponent is within range
+                if (archer.isEnemy() || !archer.isEnemy()) {  // Both ally and enemy archers can shoot
+                    mainLogic.spawnProjectile(character); // Add projectile spawn logic in your MainLogic
+
+                    // Update the last shot time for the archer
+                    archer.setLastShotTime(currentTime);
+                }
+            }
+        }
+
         return nearestOpponent;
     }
 }

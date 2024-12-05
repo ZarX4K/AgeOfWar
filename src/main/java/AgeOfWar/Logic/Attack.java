@@ -34,24 +34,16 @@ public class Attack {
                 }
 
             } else {
+                // Check if the target is an enemy before performing the attack
+                if (attacker instanceof Archer && target instanceof Archer) {
+                    System.out.println("Cannot attack allies!");
+                    return;
+                }
+
                 // Generic attack logic for other character types
                 int damageDealt = calculateDamage(attacker);
                 DAMAGESTATES damageState = determineDamageState(attacker, target, damageDealt);
                 applyDamage(target, damageDealt, damageState);
-            }
-
-            // Archer specific logic: Spawn arrows if enemies are within range
-            if (attacker instanceof Archer) {
-                Archer archer = (Archer) attacker;
-                int distance = Math.abs(attacker.getX() - target.getX());
-
-                // Check if target is within range for archers
-                if (distance <= archer.getAttackRange()) {
-                    System.out.println(attacker.getClass().getSimpleName() + " shoots an arrow!");
-                    mainLogic.spawnProjectile(attacker);  // Spawns the projectile (arrow)
-                } else {
-                    System.out.println(attacker.getClass().getSimpleName() + " cannot shoot, target too far away.");
-                }
             }
 
             updateLastAttackTime(attacker, currentTime);

@@ -11,8 +11,9 @@ public class Projectile {
     private Image image; // Visual representation of the projectile
     private boolean active; // Whether the projectile is active in the game
     private int width, height; // Width and height for scaling
+    private String team; // "player" or "enemy"
 
-    public Projectile(int width, int height, int x, int y, BaseCharacterStats shooter, String imageName) {
+    public Projectile(int width, int height, int x, int y, BaseCharacterStats shooter, String imageName,String team) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -20,6 +21,7 @@ public class Projectile {
         this.shooter = shooter;
         this.damage = shooter.getDamage();
         this.active = true;
+        this.team = team;
 
         // Spawn position slightly ahead of the shooter
         if (!shooter.isEnemy()) {
@@ -57,7 +59,13 @@ public class Projectile {
         }
     }
 
+    public String getTeam() {
+        return team;
+    }
 
+    public void setTeam(String team) {
+        this.team = team;
+    }
     public int getDamage() {
         return damage;
     }

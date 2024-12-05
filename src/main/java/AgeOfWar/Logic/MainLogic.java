@@ -70,6 +70,8 @@ public class MainLogic implements Runnable {
     private Castle playerCastle;
     private Castle enemyCastle;
     private final List<Projectile> projectiles = new ArrayList<>(); // Store active projectiles
+    private final List<Projectile> playerProjectiles = new ArrayList<>();
+    private final List<Projectile> enemyProjectiles = new ArrayList<>();
 
     // Initialization
     public void initialize() {
@@ -116,15 +118,18 @@ public class MainLogic implements Runnable {
     public void setGamePanel(JPanel gamePanel) {
         this.gamePanel = gamePanel;
     }
-    // Method to spawn a projectile
+
+
     public void spawnProjectile(BaseCharacterStats shooter) {
         String projectileImage = "Arrow.png"; // Default image for player's projectile
+        String team = "player"; // Default team is player
         if (shooter.isEnemy()) {
             projectileImage = "ArrowE.png"; // Use a different image for enemy's projectile
+            team = "enemy"; // Set team to enemy
         }
 
         // Create the projectile based on the shooter's position and direction
-        Projectile arrow = new Projectile(80, 80, shooter.getX(), shooter.getY(), shooter, projectileImage);
+        Projectile arrow = new Projectile(80, 80, shooter.getX(), shooter.getY(), shooter, projectileImage, team);
         projectiles.add(arrow);  // Add the projectile to a list of projectiles in the game
     }
 
@@ -134,8 +139,15 @@ public class MainLogic implements Runnable {
         while (iterator.hasNext()) {
             Projectile projectile = iterator.next();
             projectile.update();
+
             if (!projectile.isActive()) {
                 iterator.remove(); // Remove inactive projectiles
+                // If the projectile is from the player, remove it from playerProjectiles, otherwise from enemyProjectiles
+                if (projectile.getTeam().equals("player")) {
+                    playerProjectiles.remove(projectile);
+                } else {
+                    enemyProjectiles.remove(projectile);
+                }
             }
         }
     }
@@ -143,9 +155,10 @@ public class MainLogic implements Runnable {
 
 
 
+
     // Spawning methods
     private void spawnKnight() {
-        Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 3, true, false, false, false, 25);
+        Knight knight = new Knight(150, 800, 150, 150, "knight.png", "knight.png", "knight.png", 100, 20, 25, 1, true, false, false, false, 25);
         if (isSpawnAvailable(playerGold, lastKnightSpawnTime, KNIGHT_SPAWN_DELAY, knight.getPriceBuy())) {
             deductPlayerGold(knight.getPriceBuy());
             knights.add(knight);
@@ -156,7 +169,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnArcher() {
-        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 3, true, false, false, false, 20, 500);
+        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 20, 500);
         if (isSpawnAvailable(playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, archer.getPriceBuy())) {
             deductPlayerGold(archer.getPriceBuy());
             archers.add(archer);
@@ -167,7 +180,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnTank() {
-        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 3, true, false, false, false, 30, 500, 15);
+        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 1, true, false, false, false, 30, 500, 15);
         if (isSpawnAvailable(playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, tank.getPriceBuy())) {
             deductPlayerGold(tank.getPriceBuy());
             tanks.add(tank);
@@ -179,7 +192,7 @@ public class MainLogic implements Runnable {
 
 
     private void spawnEnemyKnight() {
-        Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 3, true, true, false, false, 25);
+        Knight enemyKnight = new Knight(1400, 800, 150, 150, "enemyKnight.png", "enemyKnight.png", "enemyKnight.png", 100, 20, 25, 1, true, true, false, false, 25);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyKnightSpawnTime, KNIGHT_SPAWN_DELAY, enemyKnight.getPriceBuy())) {
             enemyKnights.add(enemyKnight);
             deductEnemyGold(enemyKnight.getPriceBuy());
@@ -190,7 +203,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyArcher() {
-        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 3, true, true, false, false, 20, 500);
+        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 20, 500);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, enemyArcher.getPriceBuy())) {
             enemyArchers.add(enemyArcher);
             deductEnemyGold(enemyArcher.getPriceBuy());
@@ -201,7 +214,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyTank() {
-        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 3, true, true, false, false, 30, 500, 15);
+        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 1, true, true, false, false, 30, 500, 15);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, enemyTank.getPriceBuy())) {
             enemyTanks.add(enemyTank);
             deductEnemyGold(enemyTank.getPriceBuy());
@@ -352,29 +365,35 @@ public class MainLogic implements Runnable {
 
         // Check projectile collisions
         for (Projectile projectile : projectiles) {
-            // Check if the projectile hits any player character
-            for (BaseCharacterStats character : playerCharacters) {
-                if (hitboxes.collidesArrowCharacter(projectile, character)) {
-                    projectile.setActive(false);
-                    character.takeDamage(projectile.getDamage());  // Deal damage to player character
+            if (projectile.getTeam().equals("player")) {
+                // Check if the projectile hits any enemy character
+                for (BaseCharacterStats enemy : enemyCharacters) {
+                    if (hitboxes.collidesArrowCharacter(projectile, enemy)) {
+                        projectile.setActive(false);
+                        enemy.takeDamage(projectile.getDamage());  // Deal damage to enemy
+                    }
+                }
+            } else {
+                // Check if the projectile hits any player character
+                for (BaseCharacterStats player : playerCharacters) {
+                    if (hitboxes.collidesArrowCharacter(projectile, player)) {
+                        projectile.setActive(false);
+                        player.takeDamage(projectile.getDamage());  // Deal damage to player
+                    }
                 }
             }
+        }
 
-            // Check if the projectile hits any enemy character
-            for (BaseCharacterStats character : enemyCharacters) {
-                if (hitboxes.collidesArrowCharacter(projectile, character)) {
-                    projectile.setActive(false);
-                    character.takeDamage(projectile.getDamage());  // Deal damage to enemy character
-                }
-            }
-
-            // Check projectile collision with player's castle (player projectiles should hit the enemy castle)
+        // Check projectile collision with the player's castle (player projectiles should hit the enemy castle)
+        for (Projectile projectile : projectiles) {
             if (hitboxes.collidesArrowCastle(projectile, playerCastle)) {
                 projectile.setActive(false);
                 playerCastle.takeDamage(projectile.getDamage());  // Deal damage to player's castle
             }
+        }
 
-            // Check projectile collision with enemy's castle (enemy projectiles should hit the player's castle)
+        // Check projectile collision with enemy's castle (enemy projectiles should hit the player's castle)
+        for (Projectile projectile : projectiles) {
             if (hitboxes.collidesArrowCastle(projectile, enemyCastle)) {
                 projectile.setActive(false);
                 enemyCastle.takeDamage(projectile.getDamage());  // Deal damage to enemy's castle
@@ -384,6 +403,7 @@ public class MainLogic implements Runnable {
         // Check other character collisions
         collisions.checkCollisions(playerCharacters, enemyCharacters);
     }
+
 
 
 

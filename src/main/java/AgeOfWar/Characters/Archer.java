@@ -2,6 +2,8 @@ package AgeOfWar.Characters;
 
 public class Archer extends Knight implements CombatType {
     private int range;
+    private long lastShotTime = 0; // Store the time of the last shot
+
 
     public Archer(int x, int y, int width, int height, String standImagePath, String walkImagePath, String attackImagePath, int health, int damage, int priceBuy, int moveSpeed, boolean isMoving, boolean isEnemy, boolean isInCombat, boolean defeated, int critical, int range) {
         super(x, y, width, height, standImagePath, walkImagePath, attackImagePath, health, damage, priceBuy, moveSpeed, isMoving, isEnemy, isInCombat, defeated, critical);
@@ -43,5 +45,12 @@ public class Archer extends Knight implements CombatType {
     @Override
     public int getRangedAttackRange() {
         return range; // Use the range property for the ranged attack range
+    }
+    public long getLastShotTime() {
+        return lastShotTime;
+    }
+
+    public void setLastShotTime(long lastShotTime) {
+        this.lastShotTime = lastShotTime;
     }
 }
