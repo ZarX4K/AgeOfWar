@@ -52,7 +52,8 @@ public class MainLogic implements Runnable {
     private Moving moving;
     private Collisions collisions;
     private Hitboxes hitboxes;
-    private Attack attack;
+    private CombatType attack;
+    private CombatType rangeAttack;
     private BackGroundScreens backGroundScreens;
     private JPanel gamePanel;
     private Thread gameThread; //
@@ -79,7 +80,8 @@ public class MainLogic implements Runnable {
         moving = new Moving();
         hitboxes = new Hitboxes();
         attack = new Attack();
-        collisions = new Collisions(moving, hitboxes, attack, this);
+        rangeAttack = new RangeAttack();
+        collisions = new Collisions(moving, hitboxes, attack, rangeAttack, this);
         keyReader = new KeyReader(this);  // Pass the instance of MainLogic here
         backGroundScreens = new BackGroundScreens();
 
@@ -169,7 +171,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnArcher() {
-        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 20, 500);
+        Archer archer = new Archer(150, 800, 150, 150, "archer.png", "archer.png", "archer.png", 100, 15, 50, 1, true, false, false, false, 20, 400);
         if (isSpawnAvailable(playerGold, lastArcherSpawnTime, ARCHER_SPAWN_DELAY, archer.getPriceBuy())) {
             deductPlayerGold(archer.getPriceBuy());
             archers.add(archer);
@@ -180,7 +182,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnTank() {
-        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 1, true, false, false, false, 30, 500, 15);
+        Tank tank = new Tank(150, 800, 150, 150, "Tank.png", "Tank.png", "Tank.png", 170, 25, 120, 1, true, false, false, false, 30, 300, 15);
         if (isSpawnAvailable(playerGold, lastTankSpawnTime, TANK_SPAWN_DELAY, tank.getPriceBuy())) {
             deductPlayerGold(tank.getPriceBuy());
             tanks.add(tank);
@@ -203,7 +205,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyArcher() {
-        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 20, 500);
+        Archer enemyArcher = new Archer(1400, 800, 150, 150, "enemyArcher.png", "enemyArcher.png", "enemyArcher.png", 100, 15, 50, 1, true, true, false, false, 20, 400);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyArcherSpawnTime, ARCHER_SPAWN_DELAY, enemyArcher.getPriceBuy())) {
             enemyArchers.add(enemyArcher);
             deductEnemyGold(enemyArcher.getPriceBuy());
@@ -214,7 +216,7 @@ public class MainLogic implements Runnable {
     }
 
     private void spawnEnemyTank() {
-        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 1, true, true, false, false, 30, 500, 15);
+        Tank enemyTank = new Tank(1400, 800, 150, 150, "enemyTank.png", "enemyTank.png", "enemyTank.png", 170, 25, 120, 1, true, true, false, false, 30, 300, 15);
         if (isEnemySpawnAvailable(enemyGold, lastEnemyTankSpawnTime, TANK_SPAWN_DELAY, enemyTank.getPriceBuy())) {
             enemyTanks.add(enemyTank);
             deductEnemyGold(enemyTank.getPriceBuy());

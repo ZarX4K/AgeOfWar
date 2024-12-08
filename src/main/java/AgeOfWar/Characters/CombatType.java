@@ -1,13 +1,14 @@
 package AgeOfWar.Characters;
 
+import AgeOfWar.Logic.MainLogic;
+
+import java.util.List;
+
 public interface CombatType {
-    void performCloseCombatAttack(BaseCharacterStats target);
-    void performRangedAttack(BaseCharacterStats target);
 
-    void stopRangedAttack();
-    void stopCloseCombat();
+    public void performAttack(BaseCharacterStats attacker, BaseCharacterStats target,
+                              List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic);
 
-    // Define methods to get the combat ranges
-    int getCloseCombatRange();
-    int getRangedAttackRange();
+    public void performAttackOnCastle(BaseCharacterStats character, Castle castle);
+
 }

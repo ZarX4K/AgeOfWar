@@ -17,6 +17,7 @@ public class Moving {//
         }
     }
 
+
     private boolean shouldNotMove(BaseCharacterStats character, List<? extends BaseCharacterStats> allCharacters) {
         return character == null || !character.isMoving() || isCharacterInFront(character, allCharacters);
     }

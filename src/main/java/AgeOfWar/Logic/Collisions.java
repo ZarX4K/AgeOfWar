@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Collisions {
-    private final Attack attack;
+    private final CombatType attack;
+    private final CombatType rangeAttack;
     private final Hitboxes hitboxes;
     private final Moving moving;
     private final MainLogic mainLogic;
 
-    public Collisions(Moving moving, Hitboxes hitboxes, Attack attack, MainLogic mainLogic) {
+    public Collisions(Moving moving, Hitboxes hitboxes, CombatType attack, CombatType rangeAttack, MainLogic mainLogic) {
         this.moving = moving;
         this.hitboxes = hitboxes;
         this.attack = attack;
+        this.rangeAttack = rangeAttack;
         this.mainLogic = mainLogic;
     }
 
@@ -69,7 +71,7 @@ public class Collisions {
         int nearestDistance = Integer.MAX_VALUE;
 
         for (BaseCharacterStats opponent : opponents) {
-            if (character.getY() == opponent.getY()) {
+            if (character.getY() == opponent.getY()) { // Same lane
                 int distance = Math.abs(character.getX() - opponent.getX());
                 if (distance < nearestDistance) {
                     nearestDistance = distance;
@@ -78,24 +80,11 @@ public class Collisions {
             }
         }
 
-        // Ensure that the target is an enemy and check if the character is an Archer
+        // Handling for Archers based purely on distance
         if (character instanceof Archer && nearestOpponent != null) {
-            Archer archer = (Archer) character;
-            int distance = Math.abs(character.getX() - nearestOpponent.getX());
-            long currentTime = System.currentTimeMillis();
-
-            // Check if the archer can shoot: both ally and enemy archers are allowed to shoot
-            if (distance <= archer.getRangedAttackRange() && currentTime - archer.getLastShotTime() >= 800) {
-                // Perform attack only if the opponent is within range
-                if (archer.isEnemy() || !archer.isEnemy()) {  // Both ally and enemy archers can shoot
-                    mainLogic.spawnProjectile(character); // Add projectile spawn logic in your MainLogic
-
-                    // Update the last shot time for the archer
-                    archer.setLastShotTime(currentTime);
-                }
-            }
+            rangeAttack.performAttack(character, nearestOpponent, null, null, this.mainLogic);
         }
 
-        return nearestOpponent;
+        return nearestOpponent; // Ensure return at the end
     }
 }

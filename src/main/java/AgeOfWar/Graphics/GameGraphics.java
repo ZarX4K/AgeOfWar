@@ -14,7 +14,7 @@ public class GameGraphics extends JFrame {//
         setTitle("AGE OF WAR");
         setPreferredSize(new Dimension(1710, 990));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(true);
+        setResizable(false);
         setIconImage(new ImageIcon(getClass().getClassLoader().getResource("gameLogo.png")).getImage());
 
         // Create the gamePanel and add it to the window

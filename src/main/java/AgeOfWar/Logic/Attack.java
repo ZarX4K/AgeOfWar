@@ -4,7 +4,7 @@ import AgeOfWar.Characters.*;
 import java.util.List;
 import java.util.Random;
 
-public class Attack {
+public class Attack implements CombatType {
     private static final long ATTACK_INTERVAL = 500; // Milliseconds between attacks
     private static final Random RANDOM = new Random();
     private boolean healthBoostApplied = false;
@@ -13,46 +13,22 @@ public class Attack {
         // Initialization if needed
     }
 
-    // Perform an attack between characters
+    @Override
     public void performAttack(BaseCharacterStats attacker, BaseCharacterStats target,
                               List<? extends BaseCharacterStats> team1, List<? extends BaseCharacterStats> team2, MainLogic mainLogic) {
         long currentTime = System.currentTimeMillis();
 
         if (canAttack(attacker, target, currentTime)) {
-            if (attacker instanceof CombatType) {
-                CombatType combatant = (CombatType) attacker;
-                int distance = Math.abs(attacker.getX() - target.getX());
 
-                // Close combat logic (perform only if within close combat range)
-                if (distance <= combatant.getCloseCombatRange()) {
-                    combatant.performCloseCombatAttack(target);
-                    combatant.stopRangedAttack(); // Stop ranged attack if in close range
-                } else if (distance <= combatant.getRangedAttackRange()) {
-                    // If within ranged attack range, perform ranged attack
-                    combatant.performRangedAttack(target);
-                    combatant.stopCloseCombat(); // Ensure close combat does not happen while ranged
-                }
-
-            } else {
-                // Check if the target is an enemy before performing the attack
-                if (attacker instanceof Archer && target instanceof Archer) {
-                    System.out.println("Cannot attack allies!");
-                    return;
-                }
-
-                // Generic attack logic for other character types
                 int damageDealt = calculateDamage(attacker);
                 DAMAGESTATES damageState = determineDamageState(attacker, target, damageDealt);
                 applyDamage(target, damageDealt, damageState);
-            }
-
             updateLastAttackTime(attacker, currentTime);
             applyHealthBoostIfNeeded(attacker, target);
             handleDefeat(attacker, team1, mainLogic);
             handleDefeat(target, team2, mainLogic);
         }
     }
-
     // Check if the attacker can attack
     private boolean canAttack(BaseCharacterStats attacker, BaseCharacterStats target, long currentTime) {
         return attacker.isAlive() && target.isAlive() &&
@@ -138,6 +114,7 @@ public class Attack {
     }
 
     // Perform an attack on a castle
+    @Override
     public void performAttackOnCastle(BaseCharacterStats character, Castle castle) {
         long currentTime = System.currentTimeMillis();
 
